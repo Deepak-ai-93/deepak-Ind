@@ -17,7 +17,13 @@ visit(root);
 files.sort();
 if (files.length === 0) throw new Error("No TypeScript test files found.");
 
-const result = spawnSync(process.execPath, ["--import", "tsx", "--test", "--test-concurrency=1", ...files], { stdio: "inherit" });
-if (result.error) throw result.error;
-process.exit(result.status ?? 1);
+for (const file of files) {
+  console.log(`\n[test] ${file}`);
+  const result = spawnSync(process.execPath, ["--import", "tsx", file], { stdio: "inherit" });
+  if (result.error) throw result.error;
+  if ((result.status ?? 1) !== 0) process.exit(result.status ?? 1);
+}
+console.log(`\nPassed ${files.length} test files.`);
+
+
 

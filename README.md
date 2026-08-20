@@ -85,6 +85,10 @@ The benchmark reports savings and expected-file recall separately; a lower token
 - Commands require approval and block common destructive patterns.
 - `ind doctor` scans for likely committed secrets.
 
+## CI test behavior
+
+The test command discovers TypeScript tests without shell globs and runs each file in an isolated Node process. This keeps the native SQLite dependency stable across Windows, macOS, and Linux CI runners.
+
 ## Development
 
 ```bash
@@ -96,6 +100,7 @@ npm pack --dry-run
 ```
 
 The CI workflow runs typecheck, tests, build, and package verification on Node.js 20.
+
 
 
 
