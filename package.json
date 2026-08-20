@@ -19,7 +19,7 @@
     "dev": "tsx src/cli.ts",
     "prepare": "npm run build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "tsx --test src/**/*.test.ts",
+    "test": "node scripts/test.mjs",
     "doctor": "node dist/cli.js doctor",
     "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },
@@ -43,6 +43,7 @@
     "better-sqlite3": "^13.0.3"
   }
 }
+
 
 
 
