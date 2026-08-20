@@ -1,7 +1,7 @@
 {
   "name": "ind-terminal",
   "version": "0.1.0",
-  "description": "IND ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â a token-efficient, provider-neutral terminal coding agent.",
+  "description": "IND ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â a token-efficient, provider-neutral terminal coding agent.",
   "type": "module",
   "bin": {
     "ind": "dist/cli.js"
@@ -17,8 +17,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/cli.js",
     "dev": "tsx src/cli.ts",
-    "prepare": "npm run build",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+"typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node scripts/test.mjs",
     "doctor": "node dist/cli.js doctor",
     "prepublishOnly": "npm run typecheck && npm test && npm run build"
