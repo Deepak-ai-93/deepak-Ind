@@ -1,4 +1,5 @@
-﻿import { loadConfig } from "./config.js";
+#!/usr/bin/env node
+import { loadConfig } from "./config.js";
 import { join } from "node:path";
 import { writeFile } from "node:fs/promises";
 import { providerSummary } from "./providers/index.js";
