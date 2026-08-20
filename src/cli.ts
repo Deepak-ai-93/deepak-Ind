@@ -19,6 +19,7 @@ import { createBudgetPlan } from "./budget/planner.js";
 import { parseReplayCandidates, replayTask } from "./replay/replay.js";
 import { loadPolicy, policyPath } from "./policy/policy.js";
 import { pullEncryptedMemory, pushEncryptedMemory } from "./memory/sync.js";
+import { launchOpenCode } from "./integrations/opencode.js";
 
 const VERSION = "0.1.0";
 
@@ -41,6 +42,7 @@ Usage:
   ind events                 Read redacted JSONL integration events
   ind providers               List configured providers
   ind discover                Detect local model runtimes
+  ind opencode [args]         Download if needed and launch OpenCode
   ind benchmark               Run context savings benchmark
   ind doctor                  Check environment and likely secrets
 
@@ -255,6 +257,10 @@ function main(argv: string[]): void {
   }
   if (command === "benchmark") {
     void printBenchmark().catch((error) => { console.error(`IND benchmark error: ${error instanceof Error ? error.message : String(error)}`); process.exitCode = 1; });
+    return;
+  }
+  if (command === "opencode") {
+    launchOpenCode(rest);
     return;
   }
   if (command === "discover") {

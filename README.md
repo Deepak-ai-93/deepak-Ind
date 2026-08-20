@@ -65,7 +65,7 @@ ind                         Start the interactive surface
 ind plan <task>             Preview bounded task chunks
 ind context <task>          Preview token-budgeted repository context
 ind providers               Show configured provider capabilities
-ind discover                Detect Ollama and LM Studio
+ind discover                Detect Ollama and LM Studio`r`nind opencode [args]         Download if needed and launch OpenCode
 ind usage                   Show local tokens, cost, latency, and savings
 ind memory                  Read project memory
 ind memory add <type> <note> Append a memory note
@@ -89,7 +89,7 @@ ANTHROPIC_API_KEY=...
 GOOGLE_GENERATIVE_AI_API_KEY=...
 ```
 
-Supported paths include OpenAI, Anthropic, Google, Ollama, LM Studio, and custom OpenAI-compatible endpoints. Use `ind discover` to probe local runtimes without sending project content.
+Supported paths include OpenAI, Anthropic, Google, Ollama, LM Studio, and custom OpenAI-compatible endpoints.`r`n`r`n## OpenCode bridge`r`n`r`nUse IND as a lightweight launcher for the official OpenCode CLI. It installs `opencode-ai` globally only when OpenCode is not already available, then forwards arguments and terminal I/O:`r`n`r`n```bash`r`nind opencode`r`nind opencode --help`r`n``` Use `ind discover` to probe local runtimes without sending project content.
 
 ## Reproducible leaderboard
 
