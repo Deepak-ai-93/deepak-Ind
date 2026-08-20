@@ -29,7 +29,7 @@ pub async fn start_repl(mut cfg: IndConfig) -> Result<(), Box<dyn std::error::Er
     let mut session = AgentSession::new(cfg.clone());
 
     loop {
-        let prompt_str = format!("{} ", "ind >".bold().cyan());
+        let prompt_str = format!("{} ", "⚡ deepak-ind ❯".bright_cyan().bold());
         let readline = rl.readline(&prompt_str);
 
         match readline {
@@ -53,27 +53,35 @@ pub async fn start_repl(mut cfg: IndConfig) -> Result<(), Box<dyn std::error::Er
                 match create_configured_provider() {
                     Ok(provider) => {
                         println!();
-                        print!("{} ", "ind:".bold().green());
+                        println!("{}", "╭─ 🤖 deepak-ai ─────────────────────────────────────────────────────────────".bright_magenta().bold());
+                        print!("│ ");
                         let _ = io::stdout().flush();
 
                         let res = session
                             .run_turn(provider.as_ref(), trimmed, |token| {
-                                print!("{token}");
+                                if token.contains('\n') {
+                                    let replaced = token.replace('\n', "\n│ ");
+                                    print!("{replaced}");
+                                } else {
+                                    print!("{token}");
+                                }
                                 let _ = io::stdout().flush();
                             })
                             .await;
 
-                        println!("\n");
+                        println!();
+                        println!("{}", "╰─────────────────────────────────────────────────────────────────────────────".bright_magenta().bold());
+                        println!();
                         if let Err(e) = res {
-                            eprintln!("{} {e}", "Agent Error:".red().bold());
+                            eprintln!("{} {e}", "✖ Agent Error:".red().bold());
                         }
                     }
                     Err(e) => {
-                        eprintln!("{} {e}", "Provider Config Error:".red().bold());
+                        eprintln!("{} {e}", "✖ Provider Config Error:".red().bold());
                         eprintln!(
-                            "Tip: Set {} or run {} to switch model/provider.",
+                            "💡 Tip: Set {} or run {} to switch model/provider.",
                             "OPENAI_API_KEY".bold().yellow(),
-                            "/model".cyan()
+                            "/model".bright_cyan()
                         );
                     }
                 }
@@ -82,7 +90,7 @@ pub async fn start_repl(mut cfg: IndConfig) -> Result<(), Box<dyn std::error::Er
                 println!("{}", "^C (Type /exit or Ctrl+D to quit)".yellow());
             }
             Err(ReadlineError::Eof) => {
-                println!("{}", "Goodbye!".cyan());
+                println!("{}", "Goodbye! Thanks for coding with Deepak Bagada IND AI.".bright_cyan().bold());
                 break;
             }
             Err(err) => {
@@ -106,46 +114,30 @@ fn handle_slash_command(
 
     match root_cmd {
         "/help" | "/h" => {
-            println!("{}", "── Available IND Slash Commands ──".bold().cyan());
-            println!("  {}            Show this help reference", "/help".bold());
-            println!("  {}           Clear conversation history", "/clear".bold());
-            println!(
-                "  {}         Prune older turns to save tokens",
-                "/compact".bold()
-            );
-            println!("  {} <model>   Switch active LLM model", "/model".bold());
-            println!(
-                "  {} <task>     Generate and preview a 3-chunk task plan",
-                "/plan".bold()
-            );
-            println!(
-                "  {}           Run project diagnostics & security audit",
-                "/doctor".bold()
-            );
-            println!(
-                "  {}            View token usage and cost ledger",
-                "/usage".bold()
-            );
-            println!(
-                "  {}           View project conventions from MEMORY.md",
-                "/memory".bold()
-            );
-            println!("  {}             Show uncommitted git diff", "/diff".bold());
-            println!(
-                "  {}     Exit the interactive session",
-                "/exit, /quit".bold()
-            );
+            println!("{}", "╭── ⚡ IND Slash Commands Cheatsheet (Deepak Bagada Edition) ──────────────────╮".bright_cyan().bold());
+            println!("│  {} {:<60} │", "/help, /h".bright_yellow().bold(), "Show this interactive command cheat sheet reference");
+            println!("│  {} {:<60} │", "/clear".bright_yellow().bold(), "Reset conversation history & start a fresh session");
+            println!("│  {} {:<60} │", "/compact".bright_yellow().bold(), "Prune older turn context to conserve token budget");
+            println!("│  {} {:<60} │", "/model <name>".bright_yellow().bold(), "Switch active LLM model on the fly");
+            println!("│  {} {:<60} │", "/plan <task>".bright_yellow().bold(), "Generate and preview a bounded 3-chunk execution plan");
+            println!("│  {} {:<60} │", "/doctor".bright_yellow().bold(), "Run security audit, secret scan & toolchain checks");
+            println!("│  {} {:<60} │", "/usage".bright_yellow().bold(), "View SQLite token usage ledger, session cost & savings");
+            println!("│  {} {:<60} │", "/memory".bright_yellow().bold(), "Inspect active project conventions from MEMORY.md");
+            println!("│  {} {:<60} │", "/diff".bright_yellow().bold(), "Show uncommitted Git diff in the current workspace");
+            println!("│  {} {:<60} │", "/exit, /quit".bright_yellow().bold(), "Exit interactive session safely");
+            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
             println!();
         }
         "/clear" => {
             session.clear();
-            println!("{}", "Session history cleared.".green());
+            println!("{} {}", "✔".bright_green().bold(), "Conversation history cleared. Ready for fresh task!".bright_white().bold());
         }
         "/compact" => {
             session.compact();
             println!(
-                "{}",
-                "Session history compacted to latest turns to save tokens.".green()
+                "{} {}",
+                "✔".bright_green().bold(),
+                "Session history compacted to latest turns to optimize token budget.".bright_white().bold()
             );
         }
         "/model" => {
@@ -153,9 +145,9 @@ fn handle_slash_command(
                 let new_model = parts[1].to_string();
                 cfg.model = new_model.clone();
                 session.config.model = new_model.clone();
-                println!("{} Switched model to: {}", "✔".green(), new_model.bold());
+                println!("{} Switched model to: {}", "✔".bright_green().bold(), new_model.bright_yellow().bold());
             } else {
-                println!("Current model: {}", cfg.model.bold());
+                println!("Current model: {}", cfg.model.bright_yellow().bold());
                 println!("Usage: /model <model_name>");
             }
         }
@@ -164,58 +156,63 @@ fn handle_slash_command(
                 let task = parts[1..].join(" ");
                 match create_task_plan(&task, &[]) {
                     Ok(plan) => {
-                        println!("{} {}", "Plan ID:".cyan(), plan.id);
+                        println!("╭── 📋 Execution Plan ID: {} ───────────────────────────────────╮", plan.id.bright_cyan().bold());
                         for chunk in &plan.chunks {
                             println!(
-                                "  {}. {} — {}",
-                                chunk.sequence,
-                                chunk.title.bold(),
-                                chunk.goal
+                                "│  {}. {} — {}",
+                                chunk.sequence.to_string().bright_yellow().bold(),
+                                chunk.title.bright_white().bold(),
+                                chunk.goal.dimmed()
                             );
                         }
+                        println!("╰─────────────────────────────────────────────────────────────────────────────╯");
                     }
-                    Err(e) => eprintln!("{} {e}", "Plan Error:".red()),
+                    Err(e) => eprintln!("{} {e}", "✖ Plan Error:".red().bold()),
                 }
             } else {
                 println!("Usage: /plan <task description>");
             }
         }
         "/doctor" => {
-            println!("{}", "Running project security diagnostics...".cyan());
+            println!("{}", "╭── 🩺 Project Security & Health Audit ──────────────────────────────────────╮".bright_cyan().bold());
             let report = security::scan_project(&cfg.project_root);
             for f in &report.findings {
-                println!("  [{}] [{}] {}", f.severity.label(), f.category, f.message);
+                println!("│  [{}] [{}] {}", f.severity.label(), f.category.bold(), f.message);
             }
             let (pass, info, warn, crit) = report.counts();
+            println!("├─────────────────────────────────────────────────────────────────────────────┤");
             println!(
-                "\n  Summary: {} pass, {} info, {} warnings, {} critical",
-                pass.to_string().green(),
-                info.to_string().blue(),
-                warn.to_string().yellow(),
-                crit.to_string().red()
+                "│  Summary: {} pass | {} info | {} warnings | {} critical                 │",
+                pass.to_string().bright_green().bold(),
+                info.to_string().bright_blue().bold(),
+                warn.to_string().bright_yellow().bold(),
+                crit.to_string().bright_red().bold()
             );
+            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
         }
         "/usage" => {
-            println!("{}", "Local Usage Summary:".bold().cyan());
+            println!("{}", "╭── 📊 Local Token Usage & Savings Ledger ───────────────────────────────────╮".bright_cyan().bold());
             if let Ok(ledger) = UsageLedger::init(&cfg.project_root)
                 && let Ok((p, c, cost)) = ledger.summary()
             {
-                println!("  Prompt Tokens:     {p}");
-                println!("  Completion Tokens: {c}");
-                println!("  Total Tokens:      {}", p + c);
-                println!("  Estimated Cost:    ${cost:.4}");
+                println!("│  Prompt Tokens:     {:<48} │", p.to_string().bright_yellow());
+                println!("│  Completion Tokens: {:<48} │", c.to_string().bright_yellow());
+                println!("│  Total Lifetime:    {:<48} │", (p + c).to_string().bright_green().bold());
+                println!("│  Estimated Cost:    ${:<47.4} │", cost);
+                println!("├─────────────────────────────────────────────────────────────────────────────┤");
             }
-            println!("  Session Input:     {} tokens", session.total_input_tokens);
-            println!(
-                "  Session Output:    {} tokens",
-                session.total_output_tokens
-            );
+            println!("│  Session Input:     {:<48} │", format!("{} tokens", session.total_input_tokens).bright_cyan());
+            println!("│  Session Output:    {:<48} │", format!("{} tokens", session.total_output_tokens).bright_cyan());
+            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
         }
         "/memory" => {
             let mem = MemoryManager::new(&cfg.project_root);
             if let Ok(content) = mem.read() {
-                println!("{}", "Project Memory (MEMORY.md):".bold().cyan());
-                println!("{content}");
+                println!("{}", "╭── 🧠 Project Memory (MEMORY.md) ───────────────────────────────────────────╮".bright_cyan().bold());
+                for line in content.lines() {
+                    println!("│ {line}");
+                }
+                println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
             }
         }
         "/diff" => {
@@ -226,23 +223,27 @@ fn handle_slash_command(
             match output {
                 Ok(out) => {
                     let diff_str = String::from_utf8_lossy(&out.stdout);
+                    println!("{}", "╭── 🔍 Uncommitted Git Changes ─────────────────────────────────────────────╮".bright_cyan().bold());
                     if diff_str.trim().is_empty() {
-                        println!("No uncommitted git changes.");
+                        println!("│  No uncommitted git changes detected.");
                     } else {
-                        println!("{diff_str}");
+                        for line in diff_str.lines() {
+                            println!("│  {line}");
+                        }
                     }
+                    println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
                 }
                 Err(e) => eprintln!("Git error: {e}"),
             }
         }
         "/exit" | "/quit" | "/q" => {
-            println!("{}", "Exiting IND. Happy coding!".cyan());
+            println!("{}", "👋 Exiting Deepak Bagada IND AI. Happy coding!".bright_cyan().bold());
             return Ok(true);
         }
         unknown => {
             println!(
-                "{} Unknown command `{unknown}`. Type `/help` for list of commands.",
-                "⚠".yellow()
+                "{} Unknown command `{unknown}`. Type `/help` for list of slash commands.",
+                "⚠".bright_yellow().bold()
             );
         }
     }
@@ -250,36 +251,85 @@ fn handle_slash_command(
 }
 
 fn print_welcome_banner(cfg: &IndConfig) {
+    let border_color = |s: &str| s.bright_cyan().bold();
+    let model_display = if cfg.model.is_empty() {
+        "default".to_string()
+    } else {
+        cfg.model.clone()
+    };
+
+    println!("{}", border_color("╭─────────────────────────────────────────────────────────────────────────────╮"));
     println!(
         "{}",
-        "==================================================".cyan()
+        format!(
+            "│  {}  │",
+            "____  _____ _____ ____   _    _      ____    _    ____    _    ____   _  ".bright_cyan().bold()
+        )
     );
     println!(
-        "{} {}",
-        "IND AI Coding Agent".bold().green(),
-        "(Native Rust Terminal REPL)".bold()
+        "{}",
+        format!(
+            "│ {} │",
+            "|  _ \\| ____| ____|  _ \\ / \\  | |/ /  | __ )  / \\  / ___|  / \\  |  _ \\ / \\ ".bright_cyan().bold()
+        )
     );
     println!(
-        "  Project:  {}",
+        "{}",
+        format!(
+            "│ {} │",
+            "| | | |  _| |  _| | |_) / _ \\ | ' /   |  _ \\ / _ \\| |  _  / _ \\ | | | / _ \\".bright_cyan().bold()
+        )
+    );
+    println!(
+        "{}",
+        format!(
+            "│ {} │",
+            "| |_| | |___| |___|  __/ ___ \\| . \\   | |_) / ___ \\ |_| |/ ___ \\| |_| / ___ \\".bright_cyan().bold()
+        )
+    );
+    println!(
+        "{}",
+        format!(
+            "│ {} │",
+            "|____/|_____|_____|_| /_/   \\_\\_|\\_\\  |____/_/   \\_\\____/_/   \\_\\____/_/   \\_\\".bright_cyan().bold()
+        )
+    );
+    println!("{}", border_color("│                                                                             │"));
+    println!(
+        "{}",
+        format!(
+            "│                   {}                   │",
+            "⚡ IND AI — NATIVE RUST CODING TERMINAL ⚡".bright_magenta().bold()
+        )
+    );
+    println!(
+        "{}",
+        format!(
+            "│                       {}                      │",
+            "Created by Deepak Bagada".bright_yellow().bold()
+        )
+    );
+    println!("{}", border_color("├─────────────────────────────────────────────────────────────────────────────┤"));
+    println!(
+        "│  {} {:<57} │",
+        "📁 Project: ".bright_green().bold(),
         cfg.project_root.display().to_string().cyan()
     );
-    println!("  Provider: {}", cfg.provider.yellow());
     println!(
-        "  Model:    {}",
-        if cfg.model.is_empty() {
-            "default".to_string()
-        } else {
-            cfg.model.clone()
-        }
-        .bold()
+        "│  {} {:<57} │",
+        "🤖 Provider:".bright_green().bold(),
+        format!("{} ({})", cfg.provider.yellow().bold(), model_display.bold())
     );
     println!(
-        "Type your coding prompt directly, or {} for commands.",
-        "/help".bold().cyan()
+        "│  {} {:<57} │",
+        "⚡ Mode:    ".bright_green().bold(),
+        format!("Tiered Model Routing + Token-Budget Context (~50% savings)").bright_white()
     );
     println!(
-        "{}",
-        "==================================================".cyan()
+        "│  {} {:<57} │",
+        "💡 Quicktip:".bright_green().bold(),
+        format!("Type coding prompt or {} for slash commands", "/help".bright_cyan().bold())
     );
+    println!("{}", border_color("╰─────────────────────────────────────────────────────────────────────────────╯"));
     println!();
 }
