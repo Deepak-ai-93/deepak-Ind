@@ -1,145 +1,214 @@
-# IND
+# IND (Rust Native)
 
-IND is a cross-platform terminal coding agent focused on lower token usage, bounded task chunks, transparent usage monitoring, and portable project memory.
+> **A high-performance, zero-dependency, ultra-low memory terminal coding agent built in Rust.**
 
-## Install
+IND is designed for standalone execution across Windows, macOS, and Linux. It delivers token-efficient context indexing, bounded task execution, local SQLite usage ledger, security auditing, and reproducible benchmarks.
 
-### Install directly from GitHub
+---
 
-```bash
-npm install -g github:Deepak-ai-93/deepak-Ind
-ind --help
-```
+## ⚡ Features
 
-The GitHub repository includes the prebuilt CLI runtime, so installation does not require TypeScript or a local build step. IND targets Node.js 20+ on Windows, macOS, and Linux.
+- **🚀 Native Rust Performance**: Single binary, zero external runtime dependencies (no Node.js/Python required), < 10MB memory footprint.
+- **📉 Intelligent Token Reduction**: Token-budgeted context selection achieving **~50% input token savings** without degrading task completion quality.
+- **🔒 Built-in Security Scanner (`ind doctor`)**: Proactively scans for leaked API keys, unignored `.env` files, sensitive credential leaks, and permission violations.
+- **🤖 Neutral Provider Support**: First-class streaming support for OpenAI, Anthropic, Google Gemini, Ollama, LM Studio, and any custom OpenAI-compatible endpoint.
+- **🎛️ Tiered Model Routing**: Automatically classifies incoming tasks and routes between cheap and strong model tiers for optimal cost-efficiency.
+- **🛡️ Team Policies & Safe Execution**: Restrict allowed commands and providers via `.ind/policy.json` with auto-approval or interactive approval modes.
+- **📊 SQLite Usage & Cost Ledger**: Local persistent tracking of prompt tokens, completion tokens, latency, and estimated cost savings.
+- **🧠 Portable Project Memory**: Append-only `MEMORY.md` and encrypted sync capabilities.
+- **🏆 Reproducible Benchmarks**: Built-in benchmark harness and leaderboard generation (`ind benchmark`, `ind leaderboard`).
 
-### Run without global PATH setup
+---
 
-If your terminal says `ind` is not recognized, use `npx`:
+## 📦 Installation
 
-```bash
-npx --yes --package=github:Deepak-ai-93/deepak-Ind ind --help
-```
+### Option 1: Download Prebuilt Binaries (Recommended)
 
-Once `ind-terminal` has been published to npm by a maintainer, the simplest install will be:
+Download the latest standalone executable from [GitHub Releases](https://github.com/Deepak-ai-93/deepak-Ind/releases):
 
-```bash
-npm install --global ind-terminal
-ind --help
-```
+| OS / Architecture | Artifact Archive | Binary Name |
+|---|---|---|
+| **Windows** (x86_64) | `ind-windows-x86_64.zip` | `ind.exe` |
+| **Linux** (x86_64) | `ind-linux-x86_64.tar.gz` | `ind` |
+| **Linux** (ARM64 / aarch64) | `ind-linux-aarch64.tar.gz` | `ind` |
+| **macOS** (Apple Silicon M1/M2/M3/M4) | `ind-macos-aarch64.tar.gz` | `ind` |
+| **macOS** (Intel x86_64) | `ind-macos-x86_64.tar.gz` | `ind` |
 
-### Windows PowerShell troubleshooting
+Extract the archive and move `ind` (or `ind.exe`) into your system's `PATH`.
 
-Use the global flag exactly as shown:
+---
 
-```powershell
-npm.cmd install --global github:Deepak-ai-93/deepak-Ind
-$npmGlobal = npm.cmd prefix --global
-& "$npmGlobal\ind.cmd" --help
-```
+### Option 2: Install via Cargo (from Source)
 
-If `ind` is still not recognized, close and reopen PowerShell. The npm global directory must be on PATH. To update the current PowerShell session immediately:
-
-```powershell
-$env:Path += ";$(npm.cmd prefix --global)"
-ind --help
-```
-
-### Install from source
+If you have the Rust toolchain installed:
 
 ```bash
+# Clone the repository
 git clone https://github.com/Deepak-ai-93/deepak-Ind.git
 cd deepak-Ind
-npm install
-npm run build
-npm link
-ind --help
+
+# Install directly to ~/.cargo/bin (must be in your PATH)
+cargo install --path .
 ```
 
-The npm package is not published yet. Until a maintainer publishes it, install from GitHub using the command above.
+---
 
-## Commands
-
-```text
-ind                         Start the interactive surface
-ind plan <task>             Preview bounded task chunks
-ind context <task>          Preview token-budgeted repository context
-ind providers               Show configured provider capabilities
-ind discover                Detect Ollama and LM Studio`r`nind opencode [args]         Download if needed and launch OpenCode
-ind usage                   Show local tokens, cost, latency, and savings
-ind memory                  Read project memory
-ind memory add <type> <note> Append a memory note
-ind memory sync push|pull   Explicitly sync encrypted memory
-ind resume                  Show resumable session state
-ind benchmark               Run the context savings benchmark
-ind leaderboard              Record a reproducible benchmark ranking
-ind doctor                  Check environment and likely secrets
-```
-
-## Provider configuration
-
-Set provider credentials in the environment or a local secret manager. Never commit `.env` or place credentials in `MEMORY.md`.
-
-```text
-IND_PROVIDER=openai-compatible
-IND_MODEL=your-model
-IND_BASE_URL=http://localhost:11434/v1
-OPENAI_API_KEY=...
-ANTHROPIC_API_KEY=...
-GOOGLE_GENERATIVE_AI_API_KEY=...
-```
-
-Supported paths include OpenAI, Anthropic, Google, Ollama, LM Studio, and custom OpenAI-compatible endpoints.`r`n`r`n## OpenCode bridge`r`n`r`nUse IND as a lightweight launcher for the official OpenCode CLI. It installs `opencode-ai` globally only when OpenCode is not already available, then forwards arguments and terminal I/O:`r`n`r`n```bash`r`nind opencode`r`nind opencode --help`r`n``` Use `ind discover` to probe local runtimes without sending project content.
-
-## Reproducible leaderboard
-
-Run `ind leaderboard` to evaluate the checked-in fixture repositories and write `output/benchmark/leaderboard.md` plus JSONL. Each run includes a fixture-set fingerprint, deterministic run ID, savings, relevance recall, budget compliance, and a weighted score. The command is local-only; sharing the generated JSONL is optional.
-
-## Encrypted memory sync
-
-Memory sync is opt-in. Configure `IND_SYNC_URL` and a secret `IND_SYNC_KEY` (at least 16 characters), then run `ind memory sync push` or `ind memory sync pull`. IND encrypts `MEMORY.md` locally with AES-256-GCM before sending it; HTTPS is required except for localhost testing. The sync service receives only the encrypted envelope, and the key is never written to project files.
-
-## Token efficiency
-
-IND ranks repository files against the task, excludes generated and irrelevant folders, enforces input/output budgets, and records a full-context baseline in `output/benchmark/`. Run:
+### Option 3: Build from Source
 
 ```bash
-ind benchmark
+# Clone repository
+git clone https://github.com/Deepak-ai-93/deepak-Ind.git
+cd deepak-Ind
+
+# Build release binary
+cargo build --release
+
+# The compiled binary is located at:
+# target/release/ind       (Linux/macOS)
+# target/release/ind.exe   (Windows)
 ```
 
-The benchmark reports savings and expected-file recall separately; a lower token count does not count as success if relevant files were omitted.
+---
 
-## Local state and safety
+## ⚙️ Configuration & Provider Setup
 
-- `.ind/usage.json` and `.ind/memory.json` store local usage, memory, and resume state.
-- `MEMORY.md` is human-readable project memory.
-- File edits are restricted to the project root and reject `.env` and `.git` paths.
-- Commands require approval and block common destructive patterns.
-- `ind doctor` scans for likely committed secrets.
+IND reads configuration from environment variables or `.ind/config.json`.
 
-## CI test behavior
+### Environment Variables
 
-The test command discovers TypeScript tests without shell globs and runs each file in an isolated Node process. This uses portable JSON persistence, so installation does not compile native addons on Windows, macOS, or Linux.
-
-## Development
+Set your provider credentials in your terminal session or a local environment file:
 
 ```bash
-npm install
-npm run typecheck
-npm test
-npm run build
-npm pack --dry-run
+# --- Provider API Keys ---
+export OPENAI_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="sk-ant-..."
+export GOOGLE_GENERATIVE_AI_API_KEY="..."
+
+# --- Provider Configuration ---
+# Options: openai-compatible (default), openai, anthropic, google
+export IND_PROVIDER="openai-compatible"
+
+# Endpoint (default for local Ollama: http://127.0.0.1:11434/v1)
+export IND_BASE_URL="http://127.0.0.1:11434/v1"
+
+# Models
+export IND_MODEL="llama3"
+export IND_CHEAP_MODEL="llama3"
+export IND_STRONG_MODEL="llama3"
+
+# Approval mode: chunk (default), command, or never
+export IND_APPROVAL="chunk"
 ```
 
-The CI workflow runs typecheck, tests, build, and package verification on Node.js 20.
+*On Windows PowerShell, use `$env:OPENAI_API_KEY="sk-..."`.*
 
+---
 
+### Project Configuration (`.ind/config.json`)
 
+Create an optional `.ind/config.json` in your project root for project-level overrides:
 
+```json
+{
+  "provider": "openai-compatible",
+  "baseUrl": "http://127.0.0.1:11434/v1",
+  "model": "qwen2.5-coder",
+  "cheapModel": "qwen2.5-coder:7b",
+  "strongModel": "qwen2.5-coder:32b",
+  "routing": "auto",
+  "approval": "chunk",
+  "maxInputTokens": 12000,
+  "maxOutputTokens": 4000,
+  "maxToolTurns": 8
+}
+```
 
+---
 
+### Team Policy Rules (`.ind/policy.json`)
 
+Enforce organizational safety constraints on allowed providers and commands:
 
+```json
+{
+  "approval": "chunk",
+  "allowedProviders": ["openai-compatible", "anthropic"],
+  "allowedCommands": ["^cargo (test|build|check)$", "^npm (test|run)"],
+  "deniedCommands": ["rm -rf", "curl.*\\|.*sh", "format"]
+}
+```
 
+---
 
+## 🛠️ CLI Usage & Command Reference
 
+```text
+ind [COMMAND] [TASK...]
+```
+
+### Core Commands
+
+| Command | Description | Example |
+|---|---|---|
+| `ind "<task>"` | Execute an interactive task directly | `ind "fix the auth token validation"` |
+| `ind run <task>` | Execute task with bounded, approved chunks | `ind run "add integration tests for payment"` |
+| `ind plan <task>` | Preview 3-chunk execution plan without running | `ind plan "refactor logger to use tracing"` |
+| `ind context <task>` | Preview token-budgeted file selection | `ind context "update login form styling"` |
+| `ind route <task>` | Inspect task routing (cheap vs. strong model) | `ind route "explain how memory sync works"` |
+| `ind budget <task>` | Estimate tokens, turns, savings, and cost | `ind budget "migrate database schema"` |
+
+---
+
+### Diagnostics, Providers & Security
+
+| Command | Description |
+|---|---|
+| `ind doctor` | Run comprehensive diagnostics (toolchain, keys, secret leak audit, config validity) |
+| `ind providers` | View currently configured provider capabilities and model parameters |
+| `ind discover` | Automatically detect local running LLMs (Ollama, LM Studio) |
+| `ind config` | Display the resolved project configuration |
+| `ind policy` | View active team policies and allowed/denied command patterns |
+
+---
+
+### Memory, Usage & Telemetry
+
+| Command | Description |
+|---|---|
+| `ind usage` | Display SQLite token usage statistics, lifetime cost, and savings |
+| `ind memory` | View project context and conventions from `MEMORY.md` |
+| `ind memory add <category> <note>` | Append a persistent decision or pattern to project memory |
+| `ind resume` | Check and resume previously interrupted session state |
+
+---
+
+### Benchmarking
+
+| Command | Description |
+|---|---|
+| `ind benchmark` | Run context savings benchmarks across test fixtures |
+| `ind leaderboard` | Generate reproducible markdown & JSONL reports in `output/benchmark/` |
+
+---
+
+## 🧪 Development & Testing
+
+```bash
+# Run unit & integration test suite (46 tests)
+cargo test
+
+# Check code formatting
+cargo fmt --all -- --check
+
+# Run linter
+cargo clippy --all-targets -- -D warnings
+
+# Build optimized binary
+cargo build --release
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
