@@ -1,14 +1,14 @@
-# IND & Pi (π) — Native Rust AI Coding Terminal Agent
+# IND — Native Rust Autonomous AI Coding Terminal Tool
 
-> **A high-performance, zero-dependency, ultra-low memory autonomous AI coding agent & interactive REPL built in Rust.**
+> **A high-performance, zero-dependency, ultra-low memory custom AI coding terminal tool built in native Rust.**
 
-**IND** (and its companion binary **`pi`**) provides an intelligent, agentic terminal coding assistant that can read/edit your repository, execute tests and commands, and auto-fix code with surgical accuracy while cutting token usage by **~50%**.
+**IND** is a custom terminal coding assistant and autonomous agent (inspired by tools like Pi, Claude Code, and Aider). It executes directly in your shell to inspect code, apply surgical edits, run compiler/tests, and auto-fix bugs while reducing token usage by **~50%**.
 
 ---
 
-## ⚡ Key Highlights
+## ⚡ Key Capabilities
 
-- **🤖 Interactive AI Coding REPL (`pi` or `ind chat`)**: Full interactive chat interface with streaming markdown responses, syntax highlighting, and slash commands.
+- **🤖 Interactive AI Coding REPL (`ind` / `ind chat`)**: Rich interactive terminal coding loop with live streaming markdown, syntax highlighting, and slash commands.
 - **🚀 Native Rust Performance**: Single standalone binary, zero external runtime dependencies (no Node.js/Python required), < 10MB memory footprint.
 - **🛠️ Autonomous Agent Tool Loop**: Models can iteratively inspect files (`read_file`), write code (`write_file`), browse directories (`list_files`), and run builds/tests (`run_command`) with auto-fix capabilities.
 - **📉 Intelligent Token Reduction**: Token-budgeted context selection achieving **~50% input token savings** without degrading task completion quality.
@@ -24,9 +24,7 @@
 
 ## 📦 Installation & Setup
 
-Installing builds both the **`ind`** CLI and the **`pi`** interactive coding assistant.
-
-### Option 1: Install via Cargo (One-Liner)
+### Option 1: Install via Cargo (Recommended One-Liner)
 
 ```bash
 # Clone and install directly to ~/.cargo/bin (must be in your PATH)
@@ -35,7 +33,7 @@ cd deepak-Ind
 cargo install --path .
 ```
 
-After installation, both `ind` and `pi` commands will be immediately available in your terminal!
+After installation, the **`ind`** CLI is immediately available in your terminal!
 
 ---
 
@@ -43,15 +41,15 @@ After installation, both `ind` and `pi` commands will be immediately available i
 
 Download the standalone release archive from [GitHub Releases](https://github.com/Deepak-ai-93/deepak-Ind/releases):
 
-| OS / Architecture | Artifact Archive | Included Binaries |
+| OS / Architecture | Artifact Archive | Binary Name |
 |---|---|---|
-| **Windows** (x86_64) | `ind-windows-x86_64.zip` | `ind.exe`, `pi.exe` |
-| **Linux** (x86_64) | `ind-linux-x86_64.tar.gz` | `ind`, `pi` |
-| **Linux** (ARM64 / aarch64) | `ind-linux-aarch64.tar.gz` | `ind`, `pi` |
-| **macOS** (Apple Silicon M1/M2/M3/M4) | `ind-macos-aarch64.tar.gz` | `ind`, `pi` |
-| **macOS** (Intel x86_64) | `ind-macos-x86_64.tar.gz` | `ind`, `pi` |
+| **Windows** (x86_64) | `ind-windows-x86_64.zip` | `ind.exe` |
+| **Linux** (x86_64) | `ind-linux-x86_64.tar.gz` | `ind` |
+| **Linux** (ARM64 / aarch64) | `ind-linux-aarch64.tar.gz` | `ind` |
+| **macOS** (Apple Silicon M1/M2/M3/M4) | `ind-macos-aarch64.tar.gz` | `ind` |
+| **macOS** (Intel x86_64) | `ind-macos-x86_64.tar.gz` | `ind` |
 
-Extract the archive and add the binaries to your system's `PATH`.
+Extract the archive and add the `ind` executable to your system's `PATH`.
 
 ---
 
@@ -61,12 +59,12 @@ Extract the archive and add the binaries to your system's `PATH`.
 git clone https://github.com/Deepak-ai-93/deepak-Ind.git
 cd deepak-Ind
 
-# Build optimized release binaries
+# Build optimized release binary
 cargo build --release
 
-# The compiled binaries will be in:
-# target/release/ind and target/release/pi       (Linux/macOS)
-# target/release/ind.exe and target/release/pi.exe (Windows)
+# The compiled binary will be in:
+# target/release/ind       (Linux/macOS)
+# target/release/ind.exe   (Windows)
 ```
 
 ---
@@ -99,23 +97,22 @@ export IND_STRONG_MODEL="qwen2.5-coder:32b"
 
 ---
 
-## 🚀 Interactive Pi REPL (`pi` or `ind chat`)
+## 🚀 Interactive AI Coding Terminal (`ind` or `ind chat`)
 
-Start the interactive coding assistant by simply typing `pi` or `ind`:
+Launch the interactive coding assistant by typing `ind` or `ind chat`:
 
 ```bash
 # Launch interactive AI coding session
-pi
+ind
 
-# Or via ind
+# Or explicitly
 ind chat
 ind repl
-ind
 ```
 
 ### Slash Commands in REPL
 
-Inside the `pi > ` prompt, use these slash commands for quick actions:
+Inside the `ind > ` prompt, use these slash commands for quick actions:
 
 | Slash Command | Description |
 |---|---|
@@ -142,9 +139,9 @@ ind [COMMAND] [TASK...]
 
 | Command | Description | Example |
 |---|---|---|
-| `pi` | Launch the interactive AI coding terminal REPL | `pi` |
+| `ind` | Launch the interactive AI coding terminal REPL | `ind` |
 | `ind chat` / `ind repl` | Launch the interactive AI coding terminal REPL | `ind chat` |
-| `ind "<task>"` | Execute an AI task directly | `ind "fix the auth token validation"` |
+| `ind "<task>"` | Execute an AI task directly from command line | `ind "fix the auth token validation"` |
 | `ind run <task>` | Execute task with bounded, approved chunks | `ind run "add integration tests for payment"` |
 | `ind plan <task>` | Preview 3-chunk execution plan without running | `ind plan "refactor logger to use tracing"` |
 | `ind context <task>` | Preview token-budgeted file selection | `ind context "update login form styling"` |

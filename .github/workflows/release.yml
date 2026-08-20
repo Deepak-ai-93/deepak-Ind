@@ -66,7 +66,6 @@ jobs:
         run: |
           mkdir -p staging
           cp target/${{ matrix.target }}/release/ind staging/
-          cp target/${{ matrix.target }}/release/pi staging/
           cp README.md LICENSE staging/
           cd staging
           tar -czvf ../${{ matrix.asset_name }} *
@@ -77,7 +76,6 @@ jobs:
         run: |
           mkdir staging
           cp target/${{ matrix.target }}/release/ind.exe staging/
-          cp target/${{ matrix.target }}/release/pi.exe staging/
           cp README.md LICENSE staging/
           Compress-Archive -Path staging/* -DestinationPath ${{ matrix.asset_name }}
         shell: pwsh

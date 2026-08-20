@@ -29,7 +29,7 @@ pub async fn start_repl(mut cfg: IndConfig) -> Result<(), Box<dyn std::error::Er
     let mut session = AgentSession::new(cfg.clone());
 
     loop {
-        let prompt_str = format!("{} ", "pi >".bold().cyan());
+        let prompt_str = format!("{} ", "ind >".bold().cyan());
         let readline = rl.readline(&prompt_str);
 
         match readline {
@@ -53,7 +53,7 @@ pub async fn start_repl(mut cfg: IndConfig) -> Result<(), Box<dyn std::error::Er
                 match create_configured_provider() {
                     Ok(provider) => {
                         println!();
-                        print!("{} ", "π:".bold().green());
+                        print!("{} ", "ind:".bold().green());
                         let _ = io::stdout().flush();
 
                         let res = session
@@ -106,7 +106,7 @@ fn handle_slash_command(
 
     match root_cmd {
         "/help" | "/h" => {
-            println!("{}", "── Available Pi Slash Commands ──".bold().cyan());
+            println!("{}", "── Available IND Slash Commands ──".bold().cyan());
             println!("  {}            Show this help reference", "/help".bold());
             println!("  {}           Clear conversation history", "/clear".bold());
             println!(
@@ -236,7 +236,7 @@ fn handle_slash_command(
             }
         }
         "/exit" | "/quit" | "/q" => {
-            println!("{}", "Exiting Pi. Happy coding!".cyan());
+            println!("{}", "Exiting IND. Happy coding!".cyan());
             return Ok(true);
         }
         unknown => {
@@ -256,8 +256,8 @@ fn print_welcome_banner(cfg: &IndConfig) {
     );
     println!(
         "{} {}",
-        "π Pi Coding Agent".bold().green(),
-        "(Native Rust AI REPL)".bold()
+        "IND AI Coding Agent".bold().green(),
+        "(Native Rust Terminal REPL)".bold()
     );
     println!(
         "  Project:  {}",

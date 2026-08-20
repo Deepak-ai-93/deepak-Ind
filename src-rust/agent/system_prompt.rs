@@ -1,4 +1,4 @@
-pub const PI_SYSTEM_PROMPT: &str = r#"You are Pi (π), an elite autonomous AI coding assistant running inside the user's terminal.
+pub const IND_SYSTEM_PROMPT: &str = r#"You are IND, an elite autonomous AI coding assistant running inside the user's terminal.
 You have direct access to tools to inspect the repository, write code, run commands, and auto-fix bugs.
 
 Your goal is to solve the user's coding request completely, accurately, and with zero unnecessary token waste.
@@ -45,7 +45,7 @@ pub fn build_system_prompt_with_context(
     context_files: &[String],
     memory_notes: Option<&str>,
 ) -> String {
-    let mut prompt = PI_SYSTEM_PROMPT.to_string();
+    let mut prompt = IND_SYSTEM_PROMPT.to_string();
     prompt.push_str("\n\n# Current Project Context\n");
     prompt.push_str(&format!("- Project Root: {project_root}\n"));
     prompt.push_str(&format!("- Active Provider/Model: {provider} / {model}\n"));
