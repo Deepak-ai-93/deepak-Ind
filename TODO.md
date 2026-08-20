@@ -22,6 +22,14 @@
 - [x] (P2) #113 Port Benchmarking suite & Leaderboard generation (`src-rust/benchmark/`, `ind leaderboard` writes markdown and jsonl reports in `output/benchmark/`).
 - [x] (P2) #114 Setup automated GitHub Actions CI for cross-platform binary releases (Windows `.exe`, Linux `x86_64`/`aarch64`, macOS universal in `.github/workflows/release.yml`).
 
+## P3 — Pi Interactive AI Coding REPL & Autonomous Agent Loop
+- [x] (P3) #201 Add `rustyline` & dual `pi` binary configuration in `Cargo.toml`.
+- [x] (P3) #202 Implement Pi Agent system prompt & tool protocol (`src-rust/agent/system_prompt.rs`).
+- [x] (P3) #203 Implement multi-turn autonomous Agent Loop with tool execution (`src-rust/agent/mod.rs`).
+- [x] (P3) #204 Implement rich interactive REPL with history, streaming output, and slash commands (`src-rust/repl/mod.rs`).
+- [x] (P3) #205 Wire `ind chat` / default action in `src-rust/main.rs` and standalone launcher `src-rust/pi_main.rs`.
+- [x] (P3) #206 Add test suite, verify clippy, and test interactive agent loop end-to-end.
+
 ## Build Status
-- `cargo build` — clean, no warnings
-- `cargo test` — 46 tests passing (context selection, routing, budget, planner, runner, tools, memory, policy, provider parsing, security scanner, benchmarks)
+- `cargo build` — clean, no warnings (both `ind` and `pi` binaries)
+- `cargo test` — 48 tests passing (context selection, routing, budget, planner, runner, tools, memory, policy, provider parsing, security scanner, benchmarks, autonomous agent loop)

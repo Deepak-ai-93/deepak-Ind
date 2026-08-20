@@ -3,6 +3,7 @@
 use clap::{Parser, Subcommand};
 use colored::*;
 
+mod agent;
 mod benchmark;
 mod budget;
 mod config;
@@ -10,6 +11,7 @@ mod context;
 mod memory;
 mod policy;
 mod providers;
+mod repl;
 mod routing;
 mod security;
 mod tasks;
@@ -32,6 +34,10 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Start an interactive Pi AI coding REPL session
+    Chat,
+    /// Start an interactive Pi AI coding REPL session (alias for chat)
+    Repl,
     /// Execute a task with chunked auto-approved tool execution
     Run {
         /// Task description
@@ -414,6 +420,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cfg = config::load_config(None);
 
     let result: Result<(), String> = match cli.command {
+        Some(Commands::Chat) | Some(Commands::Repl) => {
+            repl::start_repl(cfg).await.map_err(|e| e.to_string())?;
+            Ok(())
+        }
         Some(Commands::Run { task }) => run_task(&task),
         Some(Commands::Plan { task }) => {
             print_plan(&task);
@@ -580,22 +590,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None => {
             let task_str = cli.task.join(" ");
             if task_str.trim().is_empty() {
-                println!(
-                    "{}",
-                    "==================================================".cyan()
-                );
-                println!(
-                    "{} - Ultra-low memory, zero-dependency coding agent",
-                    "IND (Rust Native)".bold().green()
-                );
-                println!(
-                    "Type {} for commands or pass a task to start.",
-                    "ind --help".bold()
-                );
-                println!(
-                    "{}",
-                    "==================================================".cyan()
-                );
+                repl::start_repl(cfg).await.map_err(|e| e.to_string())?;
                 Ok(())
             } else {
                 run_task(&task_str)

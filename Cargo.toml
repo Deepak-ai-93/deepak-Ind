@@ -7,6 +7,9 @@ edition = "2024"
 name = "ind"
 path = "src-rust/main.rs"
 
+[[bin]]
+name = "pi"
+path = "src-rust/pi_main.rs"
 
 [dependencies]
 clap = { version = "4.5", features = ["derive", "env"] }
@@ -27,5 +30,6 @@ anyhow = "1.0"
 async-trait = "0.1"
 chrono = "0.4"
 futures-util = "0.3"
+rustyline = "14.0"
 
 
