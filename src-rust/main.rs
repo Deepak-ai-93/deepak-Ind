@@ -3,6 +3,7 @@
 use clap::{Parser, Subcommand};
 use colored::*;
 
+mod benchmark;
 mod budget;
 mod config;
 mod context;
@@ -10,6 +11,7 @@ mod memory;
 mod policy;
 mod providers;
 mod routing;
+mod security;
 mod tasks;
 mod tools;
 mod usage;
@@ -454,8 +456,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Some(Commands::Benchmark) => {
             println!("{}", "Running context savings benchmark...".bold().cyan());
-            println!("  Fixtures: fixtures/benchmark");
-            println!("  Reports:  output/benchmark");
+            let entry = benchmark::run_all(&cfg.project_root)?;
+            println!(
+                "  Fixtures: {} run, {} passed",
+                entry.fixtures_run, entry.fixtures_passed
+            );
+            println!();
+            for result in &entry.results {
+                benchmark::print_result(result);
+            }
+            println!();
+            println!(
+                "  Median savings: {:.1}%  |  Mean savings: {:.1}%",
+                entry.median_savings_percent, entry.mean_savings_percent
+            );
+            println!("  Verdict: {}", entry.verdict);
             Ok(())
         }
         Some(Commands::Leaderboard) => {
@@ -465,7 +480,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .bold()
                     .cyan()
             );
-            println!("  Reports: output/benchmark");
+            let entry = benchmark::run_all(&cfg.project_root)?;
+            let report_path = benchmark::write_leaderboard_report(&cfg.project_root, &entry)?;
+            println!("  Leaderboard generated: {}", report_path.display());
+            println!(
+                "  Median savings: {:.1}% ({} fixtures run)",
+                entry.median_savings_percent, entry.fixtures_run
+            );
+            println!("  Verdict: {}", entry.verdict);
             Ok(())
         }
         Some(Commands::Doctor) => {
@@ -475,15 +497,76 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .bold()
                     .green()
             );
-            println!("  Project Root: {}", cfg.project_root.display());
-            println!("  Provider: {}", cfg.provider);
-            println!(
-                "  Approval Mode: {:?} (Auto-approved on Phase 1)",
-                cfg.approval
-            );
-            println!("  Max input tokens: {}", cfg.max_input_tokens);
+            println!();
+
+            // Section 1: Configuration summary.
+            println!("{}", "── Configuration ──".bold().cyan());
+            println!("  Project Root:      {}", cfg.project_root.display());
+            println!("  Provider:          {}", cfg.provider);
+            println!("  Approval Mode:     {:?}", cfg.approval);
+            println!("  Max input tokens:  {}", cfg.max_input_tokens);
             println!("  Max output tokens: {}", cfg.max_output_tokens);
-            println!("  Max tool turns: {}", cfg.max_tool_turns);
+            println!("  Max tool turns:    {}", cfg.max_tool_turns);
+            println!();
+
+            // Section 2: Toolchain checks.
+            println!("{}", "── Toolchain ──".bold().cyan());
+            for f in security::check_toolchain() {
+                println!("  [{}] {}", f.severity.label(), f.message);
+            }
+            println!();
+
+            // Section 3: Provider API keys.
+            println!("{}", "── Provider Keys ──".bold().cyan());
+            for f in security::check_provider_keys() {
+                println!("  [{}] {}", f.severity.label(), f.message);
+            }
+            println!();
+
+            // Section 4: Security scanner.
+            println!("{}", "── Security Scanner ──".bold().cyan());
+            let report = security::scan_project(&cfg.project_root);
+            for f in &report.findings {
+                let file_suffix = f
+                    .file
+                    .as_ref()
+                    .map(|p| format!(" ({})", p))
+                    .unwrap_or_default();
+                println!(
+                    "  [{}] [{}] {}{}",
+                    f.severity.label(),
+                    f.category,
+                    f.message,
+                    file_suffix
+                );
+            }
+            println!();
+
+            // Summary.
+            let (pass, info, warn, crit) = report.counts();
+            println!("{}", "── Summary ──".bold().cyan());
+            println!(
+                "  {} pass, {} info, {} warnings, {} critical",
+                pass.to_string().green(),
+                info.to_string().blue(),
+                warn.to_string().yellow(),
+                crit.to_string().red()
+            );
+            if report.is_healthy() {
+                println!(
+                    "  {}",
+                    "Project is healthy — no critical issues found."
+                        .green()
+                        .bold()
+                );
+            } else {
+                println!(
+                    "  {}",
+                    "Critical issues detected — review findings above."
+                        .red()
+                        .bold()
+                );
+            }
             Ok(())
         }
         Some(Commands::Config) => {

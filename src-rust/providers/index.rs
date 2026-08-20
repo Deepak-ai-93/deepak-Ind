@@ -37,7 +37,7 @@ pub fn create_configured_provider() -> Result<Box<dyn ProviderAdapter>, String> 
                 .clone()
                 .unwrap_or_else(|| "http://localhost:11434/v1".to_string()),
             env::var("OPENAI_API_KEY").ok().filter(|k| !k.is_empty()),
-        ))),
+        )?)),
     }
 }
 

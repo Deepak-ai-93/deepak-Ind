@@ -15,13 +15,13 @@
 - [x] (P1) #108 Port Local Project Memory (`src-rust/memory/`) with append-only `MEMORY.md`, JSON-backed entries, and resume state. *(AES-256-GCM encrypted sync still stubbed in `memory sync`.)*
 - [x] (P1) #109 Port SQLite Usage Ledger and token cost tracking (`src-rust/usage/`, `src-rust/budget/`) with budget planning, cost/savings estimation. *(Live terminal monitor pending.)*
 - [x] (P1) #110 Port Resumable Sessions & State Checkpoints (`src-rust/memory/` resume state, `ind resume`). *(`src-rust/replay/` budget-envelope replay pending.)*
-- [ ] (P1) #111 Port Diagnostics and Security Scanner (`ind doctor` renders diagnostics; `src-rust/security/` scanner pending).
+- [x] (P1) #111 Port Diagnostics and Security Scanner (`ind doctor` renders full diagnostics; `src-rust/security/` scanner with gitignore, secret leak, config, policy, toolchain, and env key checks).
 
 ## P2 — Extended Features & Benchmarking
 - [x] (P2) #112 Port Local Runtime Discovery for Ollama / LM Studio (`src-rust/providers/discovery.rs`, `ind discover`).
-- [ ] (P2) #113 Port Benchmarking suite & Leaderboard generation (`src-rust/benchmark/`, `ind leaderboard` writes reports).
-- [ ] (P2) #114 Setup automated GitHub Actions CI for cross-platform binary releases (Windows `.exe`, Linux `x86_64`/`aarch64`, macOS universal).
+- [x] (P2) #113 Port Benchmarking suite & Leaderboard generation (`src-rust/benchmark/`, `ind leaderboard` writes markdown and jsonl reports in `output/benchmark/`).
+- [x] (P2) #114 Setup automated GitHub Actions CI for cross-platform binary releases (Windows `.exe`, Linux `x86_64`/`aarch64`, macOS universal in `.github/workflows/release.yml`).
 
 ## Build Status
 - `cargo build` — clean, no warnings
-- `cargo test` — 33 tests passing (context selection, routing, budget, planner, runner, tools, memory, policy, provider parsing)
+- `cargo test` — 46 tests passing (context selection, routing, budget, planner, runner, tools, memory, policy, provider parsing, security scanner, benchmarks)

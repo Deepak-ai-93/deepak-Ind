@@ -15,15 +15,15 @@ pub struct OpenAICompatibleAdapter {
 }
 
 impl OpenAICompatibleAdapter {
-    pub fn new(base_url: String, api_key: Option<String>) -> Self {
+    pub fn new(base_url: String, api_key: Option<String>) -> Result<Self, String> {
         if base_url.trim().is_empty() {
-            panic!("OpenAI-compatible provider requires a base URL.");
+            return Err("OpenAI-compatible provider requires a base URL.".to_string());
         }
-        Self {
+        Ok(Self {
             id: "openai-compatible".to_string(),
             base_url: base_url.trim_end_matches('/').to_string(),
             api_key,
-        }
+        })
     }
 
     fn to_message(message: &ChatMessage) -> OpenAiMessage {
