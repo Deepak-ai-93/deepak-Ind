@@ -1,7 +1,7 @@
 {
   "name": "ind-terminal",
   "version": "0.1.0",
-  "description": "IND ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â a token-efficient, provider-neutral terminal coding agent.",
+  "description": "IND ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â a token-efficient, provider-neutral terminal coding agent.",
   "type": "module",
   "bin": {
     "ind": "dist/cli.js"
@@ -33,6 +33,9 @@
     "terminal"
   ],
   "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/Deepak-ai-93/deepak-Ind.git" },
+  "homepage": "https://github.com/Deepak-ai-93/deepak-Ind#readme",
+  "bugs": { "url": "https://github.com/Deepak-ai-93/deepak-Ind/issues" },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
