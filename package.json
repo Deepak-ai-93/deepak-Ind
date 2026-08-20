@@ -1,7 +1,7 @@
 {
   "name": "ind-terminal",
   "version": "0.1.0",
-  "description": "IND ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â a token-efficient, provider-neutral terminal coding agent.",
+  "description": "IND ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â a token-efficient, provider-neutral terminal coding agent.",
   "type": "module",
   "bin": {
     "ind": "dist/cli.js"

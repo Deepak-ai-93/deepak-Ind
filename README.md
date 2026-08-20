@@ -11,7 +11,7 @@ npm install -g github:Deepak-ai-93/deepak-Ind
 ind --help
 ```
 
-The GitHub install automatically builds the CLI during installation. IND targets Node.js 20+ on Windows, macOS, and Linux.
+The GitHub repository includes the prebuilt CLI runtime, so installation does not require TypeScript or a local build step. IND targets Node.js 20+ on Windows, macOS, and Linux.
 
 ### Run without global PATH setup
 
@@ -132,6 +132,7 @@ npm pack --dry-run
 ```
 
 The CI workflow runs typecheck, tests, build, and package verification on Node.js 20.
+
 
 
 
