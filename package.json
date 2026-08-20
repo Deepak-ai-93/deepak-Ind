@@ -17,6 +17,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/cli.js",
     "dev": "tsx src/cli.ts",
+    "prepare": "npm run build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "tsx --test src/**/*.test.ts",
     "doctor": "node dist/cli.js doctor",
@@ -42,5 +43,6 @@
     "better-sqlite3": "^13.0.3"
   }
 }
+
 
 
