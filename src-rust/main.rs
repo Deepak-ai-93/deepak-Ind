@@ -109,9 +109,20 @@ enum MemorySubcommands {
 
 fn print_config() {
     let cfg = config::load_config(None);
-    println!("{}", "╭── ⚙️ IND Configuration (Deepak Bagada Edition) ─────────────────────────╮".bright_cyan().bold());
-    println!("│  Project Root:     {:<50} │", cfg.project_root.display().to_string().bright_yellow());
-    println!("│  Provider:         {:<50} │", cfg.provider.bright_green().bold());
+    println!(
+        "{}",
+        "╭── ⚙️ IND Configuration (Deepak Bagada Edition) ─────────────────────────╮"
+            .bright_cyan()
+            .bold()
+    );
+    println!(
+        "│  Project Root:     {:<50} │",
+        cfg.project_root.display().to_string().bright_yellow()
+    );
+    println!(
+        "│  Provider:         {:<50} │",
+        cfg.provider.bright_green().bold()
+    );
     println!(
         "│  Model:            {:<50} │",
         if cfg.model.is_empty() {
@@ -136,26 +147,57 @@ fn print_config() {
             cfg.strong_model.bright_white().to_string()
         }
     );
-    println!("│  Routing Mode:     {:<50} │", format!("{:?}", cfg.routing).bright_cyan());
+    println!(
+        "│  Routing Mode:     {:<50} │",
+        format!("{:?}", cfg.routing).bright_cyan()
+    );
     println!(
         "│  Base Endpoint:    {:<50} │",
-        cfg.base_url.as_deref().unwrap_or("provider default").dimmed()
+        cfg.base_url
+            .as_deref()
+            .unwrap_or("provider default")
+            .dimmed()
     );
-    println!("│  Approval Policy:  {:<50} │", format!("{:?}", cfg.approval).bright_magenta());
-    println!("│  Input Budget:     {:<50} │", format!("{} tokens", cfg.max_input_tokens).bright_green());
-    println!("│  Output Budget:    {:<50} │", format!("{} tokens", cfg.max_output_tokens).bright_green());
-    println!("│  Max Tool Turns:   {:<50} │", cfg.max_tool_turns.to_string().bright_yellow());
-    println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+    println!(
+        "│  Approval Policy:  {:<50} │",
+        format!("{:?}", cfg.approval).bright_magenta()
+    );
+    println!(
+        "│  Input Budget:     {:<50} │",
+        format!("{} tokens", cfg.max_input_tokens).bright_green()
+    );
+    println!(
+        "│  Output Budget:    {:<50} │",
+        format!("{} tokens", cfg.max_output_tokens).bright_green()
+    );
+    println!(
+        "│  Max Tool Turns:   {:<50} │",
+        cfg.max_tool_turns.to_string().bright_yellow()
+    );
+    println!(
+        "{}",
+        "╰─────────────────────────────────────────────────────────────────────────────╯"
+            .bright_cyan()
+            .bold()
+    );
 }
 
 fn print_policy() {
     let cfg = config::load_config(None);
     match policy::load_policy(&cfg.project_root) {
         Ok(p) => {
-            println!("{}", "╭── 🛡️ IND Security & Execution Policy ──────────────────────────────────────╮".bright_cyan().bold());
+            println!(
+                "{}",
+                "╭── 🛡️ IND Security & Execution Policy ──────────────────────────────────────╮"
+                    .bright_cyan()
+                    .bold()
+            );
             println!(
                 "│  Policy Path:     {:<50} │",
-                policy::policy_path(&cfg.project_root).display().to_string().bright_yellow()
+                policy::policy_path(&cfg.project_root)
+                    .display()
+                    .to_string()
+                    .bright_yellow()
             );
             println!(
                 "│  Approval Mode:   {:<50} │",
@@ -188,7 +230,12 @@ fn print_policy() {
                     .unwrap_or_else(|| "safety defaults only".to_string())
                     .bright_red()
             );
-            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+            println!(
+                "{}",
+                "╰─────────────────────────────────────────────────────────────────────────────╯"
+                    .bright_cyan()
+                    .bold()
+            );
         }
         Err(e) => {
             eprintln!("{} {e}", "✖ IND policy error:".red().bold());
@@ -200,7 +247,15 @@ fn print_policy() {
 fn print_plan(task: &str) {
     match tasks::planner::create_task_plan(task, &[]) {
         Ok(plan) => {
-            println!("{}", format!("╭── 📋 Plan ID: {} ─────────────────────────────────────────────────────╮", plan.id).bright_cyan().bold());
+            println!(
+                "{}",
+                format!(
+                    "╭── 📋 Plan ID: {} ─────────────────────────────────────────────────────╮",
+                    plan.id
+                )
+                .bright_cyan()
+                .bold()
+            );
             for chunk in &plan.chunks {
                 println!(
                     "│  {}. {} — {}",
@@ -209,7 +264,12 @@ fn print_plan(task: &str) {
                     chunk.goal.dimmed()
                 );
             }
-            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+            println!(
+                "{}",
+                "╰─────────────────────────────────────────────────────────────────────────────╯"
+                    .bright_cyan()
+                    .bold()
+            );
         }
         Err(e) => {
             eprintln!("{} {e}", "✖ IND plan error:".red().bold());
@@ -221,7 +281,12 @@ fn print_plan(task: &str) {
 fn print_context(task: &str) -> Result<(), String> {
     let cfg = config::load_config(None);
     let selection = context::inspect_and_select(&cfg.project_root, task, cfg.max_input_tokens)?;
-    println!("{}", "╭── 📂 Token-Budget Context Selection ──────────────────────────────────────╮".bright_cyan().bold());
+    println!(
+        "{}",
+        "╭── 📂 Token-Budget Context Selection ──────────────────────────────────────╮"
+            .bright_cyan()
+            .bold()
+    );
     println!("│  Task:     {}", selection.task.bright_yellow().bold());
     println!(
         "│  Selected: {} files / ~{} tokens",
@@ -245,16 +310,32 @@ fn print_context(task: &str) -> Result<(), String> {
             selection.budget_tokens.to_string().dimmed()
         );
     }
-    println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+    println!(
+        "{}",
+        "╰─────────────────────────────────────────────────────────────────────────────╯"
+            .bright_cyan()
+            .bold()
+    );
     Ok(())
 }
 
 fn print_route(task: &str) {
     let cfg = config::load_config(None);
     let decision = routing::route_task(task, &cfg);
-    println!("{}", "╭── 🔀 Task Tier Model Routing ──────────────────────────────────────────────╮".bright_cyan().bold());
-    println!("│  Task Kind: {:<48} │", decision.kind.as_str().bright_yellow());
-    println!("│  Model Tier: {:<47} │", decision.tier.to_string().bright_green().bold());
+    println!(
+        "{}",
+        "╭── 🔀 Task Tier Model Routing ──────────────────────────────────────────────╮"
+            .bright_cyan()
+            .bold()
+    );
+    println!(
+        "│  Task Kind: {:<48} │",
+        decision.kind.as_str().bright_yellow()
+    );
+    println!(
+        "│  Model Tier: {:<47} │",
+        decision.tier.to_string().bright_green().bold()
+    );
     println!(
         "│  Model Name: {:<47} │",
         if decision.model.is_empty() {
@@ -264,7 +345,12 @@ fn print_route(task: &str) {
         }
     );
     println!("│  Reason:     {:<48} │", decision.reason.dimmed());
-    println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+    println!(
+        "{}",
+        "╰─────────────────────────────────────────────────────────────────────────────╯"
+            .bright_cyan()
+            .bold()
+    );
 }
 
 fn print_budget(task: &str) -> Result<(), String> {
@@ -273,7 +359,12 @@ fn print_budget(task: &str) -> Result<(), String> {
     let plan = tasks::planner::create_task_plan(task, &[])?;
     let route = routing::route_task(task, &cfg);
     let budget = budget::create_budget_plan(&cfg, &selection, task, plan.chunks.len(), &route);
-    println!("{}", "╭── 💰 Token Budget & Cost Estimate ────────────────────────────────────────╮".bright_cyan().bold());
+    println!(
+        "{}",
+        "╭── 💰 Token Budget & Cost Estimate ────────────────────────────────────────╮"
+            .bright_cyan()
+            .bold()
+    );
     println!("│  Task:            {:<48} │", budget.task.bright_yellow());
     println!(
         "│  Provider/Model:  {:<48} │",
@@ -285,20 +376,45 @@ fn print_budget(task: &str) -> Result<(), String> {
             } else {
                 &budget.model
             }
-        ).bright_green().bold()
+        )
+        .bright_green()
+        .bold()
     );
-    println!("│  Model Tier:      {:<48} │", budget.tier.to_string().bright_cyan());
+    println!(
+        "│  Model Tier:      {:<48} │",
+        budget.tier.to_string().bright_cyan()
+    );
     println!(
         "│  Input Allowance: {:<48} │",
-        format!("~{} tokens (context {})", budget.estimated_input_tokens, budget.context_tokens).bright_white()
+        format!(
+            "~{} tokens (context {})",
+            budget.estimated_input_tokens, budget.context_tokens
+        )
+        .bright_white()
     );
-    println!("│  Output Allowance:{:<48} │", format!("~{} tokens", budget.estimated_output_tokens).bright_white());
-    println!("│  Tool Turns:      {:<48} │", budget.estimated_tool_turns.to_string().bright_yellow());
-    println!("│  Total Allowance: {:<48} │", format!("~{} tokens", budget.estimated_total_tokens).bright_green().bold());
-    println!("│  Baseline Input:  {:<48} │", format!("~{} tokens", budget.baseline_input_tokens).dimmed());
+    println!(
+        "│  Output Allowance:{:<48} │",
+        format!("~{} tokens", budget.estimated_output_tokens).bright_white()
+    );
+    println!(
+        "│  Tool Turns:      {:<48} │",
+        budget.estimated_tool_turns.to_string().bright_yellow()
+    );
+    println!(
+        "│  Total Allowance: {:<48} │",
+        format!("~{} tokens", budget.estimated_total_tokens)
+            .bright_green()
+            .bold()
+    );
+    println!(
+        "│  Baseline Input:  {:<48} │",
+        format!("~{} tokens", budget.baseline_input_tokens).dimmed()
+    );
     println!(
         "│  Est. Savings:    {:<48} │",
-        format!("{:.1}%", budget.estimated_savings_percent).bright_green().bold()
+        format!("{:.1}%", budget.estimated_savings_percent)
+            .bright_green()
+            .bold()
     );
     println!("│  Estimated Cost:  ${:<47.6} │", budget.estimated_cost);
     if !budget.warnings.is_empty() {
@@ -307,7 +423,12 @@ fn print_budget(task: &str) -> Result<(), String> {
             println!("│  ⚠ Warning: {:<47} │", warning.bright_yellow());
         }
     }
-    println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+    println!(
+        "{}",
+        "╰─────────────────────────────────────────────────────────────────────────────╯"
+            .bright_cyan()
+            .bold()
+    );
     Ok(())
 }
 
@@ -371,23 +492,42 @@ fn run_task(task: &str) -> Result<(), String> {
 }
 
 fn print_usage() {
-    println!("{}", "╭── 📊 Local Token Usage & Savings Ledger (SQLite) ────────────────────────╮".bright_cyan().bold());
+    println!(
+        "{}",
+        "╭── 📊 Local Token Usage & Savings Ledger (SQLite) ────────────────────────╮"
+            .bright_cyan()
+            .bold()
+    );
     println!("│  Engine:           Native Rust (Zero External Runtime)                   │");
     println!("│  Memory Footprint: < 10MB                                                │");
     println!("├─────────────────────────────────────────────────────────────────────────────┤");
     match usage::UsageLedger::init(&config::load_config(None).project_root) {
         Ok(ledger) => match ledger.summary() {
             Ok((prompt, completion, cost)) => {
-                println!("│  Prompt Tokens:     {:<48} │", prompt.to_string().bright_yellow());
-                println!("│  Completion Tokens: {:<48} │", completion.to_string().bright_yellow());
-                println!("│  Total Tokens:      {:<48} │", (prompt + completion).to_string().bright_green().bold());
+                println!(
+                    "│  Prompt Tokens:     {:<48} │",
+                    prompt.to_string().bright_yellow()
+                );
+                println!(
+                    "│  Completion Tokens: {:<48} │",
+                    completion.to_string().bright_yellow()
+                );
+                println!(
+                    "│  Total Tokens:      {:<48} │",
+                    (prompt + completion).to_string().bright_green().bold()
+                );
                 println!("│  Estimated Cost:    ${:<47.4} │", cost);
             }
             Err(e) => eprintln!("│  {} {:<48} │", "✖ Ledger error:".red(), e),
         },
         Err(e) => eprintln!("│  {} {:<48} │", "✖ Ledger error:".red(), e),
     }
-    println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+    println!(
+        "{}",
+        "╰─────────────────────────────────────────────────────────────────────────────╯"
+            .bright_cyan()
+            .bold()
+    );
 }
 
 fn print_memory(sub: Option<MemorySubcommands>) -> Result<(), String> {
@@ -529,12 +669,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(())
         }
         Some(Commands::Doctor) => {
-            println!("{}", "╭── 🩺 IND Doctor Diagnostics (Deepak Bagada Edition) ──────────────────╮".bright_cyan().bold());
+            println!(
+                "{}",
+                "╭── 🩺 IND Doctor Diagnostics (Deepak Bagada Edition) ──────────────────╮"
+                    .bright_cyan()
+                    .bold()
+            );
             println!();
 
             // Section 1: Configuration summary.
             println!("{}", "── ⚙️ Configuration ──".bright_yellow().bold());
-            println!("  Project Root:      {}", cfg.project_root.display().to_string().cyan());
+            println!(
+                "  Project Root:      {}",
+                cfg.project_root.display().to_string().cyan()
+            );
             println!("  Provider:          {}", cfg.provider.bright_green());
             println!("  Approval Mode:     {:?}", cfg.approval);
             println!("  Max input tokens:  {}", cfg.max_input_tokens);
@@ -600,7 +748,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .bold()
                 );
             }
-            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+            println!(
+                "{}",
+                "╰─────────────────────────────────────────────────────────────────────────────╯"
+                    .bright_cyan()
+                    .bold()
+            );
             Ok(())
         }
         Some(Commands::Config) => {

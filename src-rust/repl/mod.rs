@@ -90,7 +90,12 @@ pub async fn start_repl(mut cfg: IndConfig) -> Result<(), Box<dyn std::error::Er
                 println!("{}", "^C (Type /exit or Ctrl+D to quit)".yellow());
             }
             Err(ReadlineError::Eof) => {
-                println!("{}", "Goodbye! Thanks for coding with Deepak Bagada IND AI.".bright_cyan().bold());
+                println!(
+                    "{}",
+                    "Goodbye! Thanks for coding with Deepak Bagada IND AI."
+                        .bright_cyan()
+                        .bold()
+                );
                 break;
             }
             Err(err) => {
@@ -114,30 +119,88 @@ fn handle_slash_command(
 
     match root_cmd {
         "/help" | "/h" => {
-            println!("{}", "╭── ⚡ IND Slash Commands Cheatsheet (Deepak Bagada Edition) ──────────────────╮".bright_cyan().bold());
-            println!("│  {} {:<60} │", "/help, /h".bright_yellow().bold(), "Show this interactive command cheat sheet reference");
-            println!("│  {} {:<60} │", "/clear".bright_yellow().bold(), "Reset conversation history & start a fresh session");
-            println!("│  {} {:<60} │", "/compact".bright_yellow().bold(), "Prune older turn context to conserve token budget");
-            println!("│  {} {:<60} │", "/model <name>".bright_yellow().bold(), "Switch active LLM model on the fly");
-            println!("│  {} {:<60} │", "/plan <task>".bright_yellow().bold(), "Generate and preview a bounded 3-chunk execution plan");
-            println!("│  {} {:<60} │", "/doctor".bright_yellow().bold(), "Run security audit, secret scan & toolchain checks");
-            println!("│  {} {:<60} │", "/usage".bright_yellow().bold(), "View SQLite token usage ledger, session cost & savings");
-            println!("│  {} {:<60} │", "/memory".bright_yellow().bold(), "Inspect active project conventions from MEMORY.md");
-            println!("│  {} {:<60} │", "/diff".bright_yellow().bold(), "Show uncommitted Git diff in the current workspace");
-            println!("│  {} {:<60} │", "/exit, /quit".bright_yellow().bold(), "Exit interactive session safely");
-            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+            println!(
+                "{}",
+                "╭── ⚡ IND Slash Commands Cheatsheet (Deepak Bagada Edition) ──────────────────╮"
+                    .bright_cyan()
+                    .bold()
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/help, /h".bright_yellow().bold(),
+                "Show this interactive command cheat sheet reference"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/clear".bright_yellow().bold(),
+                "Reset conversation history & start a fresh session"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/compact".bright_yellow().bold(),
+                "Prune older turn context to conserve token budget"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/model <name>".bright_yellow().bold(),
+                "Switch active LLM model on the fly"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/plan <task>".bright_yellow().bold(),
+                "Generate and preview a bounded 3-chunk execution plan"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/doctor".bright_yellow().bold(),
+                "Run security audit, secret scan & toolchain checks"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/usage".bright_yellow().bold(),
+                "View SQLite token usage ledger, session cost & savings"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/memory".bright_yellow().bold(),
+                "Inspect active project conventions from MEMORY.md"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/diff".bright_yellow().bold(),
+                "Show uncommitted Git diff in the current workspace"
+            );
+            println!(
+                "│  {} {:<60} │",
+                "/exit, /quit".bright_yellow().bold(),
+                "Exit interactive session safely"
+            );
+            println!(
+                "{}",
+                "╰─────────────────────────────────────────────────────────────────────────────╯"
+                    .bright_cyan()
+                    .bold()
+            );
             println!();
         }
         "/clear" => {
             session.clear();
-            println!("{} {}", "✔".bright_green().bold(), "Conversation history cleared. Ready for fresh task!".bright_white().bold());
+            println!(
+                "{} {}",
+                "✔".bright_green().bold(),
+                "Conversation history cleared. Ready for fresh task!"
+                    .bright_white()
+                    .bold()
+            );
         }
         "/compact" => {
             session.compact();
             println!(
                 "{} {}",
                 "✔".bright_green().bold(),
-                "Session history compacted to latest turns to optimize token budget.".bright_white().bold()
+                "Session history compacted to latest turns to optimize token budget."
+                    .bright_white()
+                    .bold()
             );
         }
         "/model" => {
@@ -145,7 +208,11 @@ fn handle_slash_command(
                 let new_model = parts[1].to_string();
                 cfg.model = new_model.clone();
                 session.config.model = new_model.clone();
-                println!("{} Switched model to: {}", "✔".bright_green().bold(), new_model.bright_yellow().bold());
+                println!(
+                    "{} Switched model to: {}",
+                    "✔".bright_green().bold(),
+                    new_model.bright_yellow().bold()
+                );
             } else {
                 println!("Current model: {}", cfg.model.bright_yellow().bold());
                 println!("Usage: /model <model_name>");
@@ -156,7 +223,10 @@ fn handle_slash_command(
                 let task = parts[1..].join(" ");
                 match create_task_plan(&task, &[]) {
                     Ok(plan) => {
-                        println!("╭── 📋 Execution Plan ID: {} ───────────────────────────────────╮", plan.id.bright_cyan().bold());
+                        println!(
+                            "╭── 📋 Execution Plan ID: {} ───────────────────────────────────╮",
+                            plan.id.bright_cyan().bold()
+                        );
                         for chunk in &plan.chunks {
                             println!(
                                 "│  {}. {} — {}",
@@ -165,7 +235,9 @@ fn handle_slash_command(
                                 chunk.goal.dimmed()
                             );
                         }
-                        println!("╰─────────────────────────────────────────────────────────────────────────────╯");
+                        println!(
+                            "╰─────────────────────────────────────────────────────────────────────────────╯"
+                        );
                     }
                     Err(e) => eprintln!("{} {e}", "✖ Plan Error:".red().bold()),
                 }
@@ -174,13 +246,25 @@ fn handle_slash_command(
             }
         }
         "/doctor" => {
-            println!("{}", "╭── 🩺 Project Security & Health Audit ──────────────────────────────────────╮".bright_cyan().bold());
+            println!(
+                "{}",
+                "╭── 🩺 Project Security & Health Audit ──────────────────────────────────────╮"
+                    .bright_cyan()
+                    .bold()
+            );
             let report = security::scan_project(&cfg.project_root);
             for f in &report.findings {
-                println!("│  [{}] [{}] {}", f.severity.label(), f.category.bold(), f.message);
+                println!(
+                    "│  [{}] [{}] {}",
+                    f.severity.label(),
+                    f.category.bold(),
+                    f.message
+                );
             }
             let (pass, info, warn, crit) = report.counts();
-            println!("├─────────────────────────────────────────────────────────────────────────────┤");
+            println!(
+                "├─────────────────────────────────────────────────────────────────────────────┤"
+            );
             println!(
                 "│  Summary: {} pass | {} info | {} warnings | {} critical                 │",
                 pass.to_string().bright_green().bold(),
@@ -188,22 +272,54 @@ fn handle_slash_command(
                 warn.to_string().bright_yellow().bold(),
                 crit.to_string().bright_red().bold()
             );
-            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+            println!(
+                "{}",
+                "╰─────────────────────────────────────────────────────────────────────────────╯"
+                    .bright_cyan()
+                    .bold()
+            );
         }
         "/usage" => {
-            println!("{}", "╭── 📊 Local Token Usage & Savings Ledger ───────────────────────────────────╮".bright_cyan().bold());
+            println!(
+                "{}",
+                "╭── 📊 Local Token Usage & Savings Ledger ───────────────────────────────────╮"
+                    .bright_cyan()
+                    .bold()
+            );
             if let Ok(ledger) = UsageLedger::init(&cfg.project_root)
                 && let Ok((p, c, cost)) = ledger.summary()
             {
-                println!("│  Prompt Tokens:     {:<48} │", p.to_string().bright_yellow());
-                println!("│  Completion Tokens: {:<48} │", c.to_string().bright_yellow());
-                println!("│  Total Lifetime:    {:<48} │", (p + c).to_string().bright_green().bold());
+                println!(
+                    "│  Prompt Tokens:     {:<48} │",
+                    p.to_string().bright_yellow()
+                );
+                println!(
+                    "│  Completion Tokens: {:<48} │",
+                    c.to_string().bright_yellow()
+                );
+                println!(
+                    "│  Total Lifetime:    {:<48} │",
+                    (p + c).to_string().bright_green().bold()
+                );
                 println!("│  Estimated Cost:    ${:<47.4} │", cost);
-                println!("├─────────────────────────────────────────────────────────────────────────────┤");
+                println!(
+                    "├─────────────────────────────────────────────────────────────────────────────┤"
+                );
             }
-            println!("│  Session Input:     {:<48} │", format!("{} tokens", session.total_input_tokens).bright_cyan());
-            println!("│  Session Output:    {:<48} │", format!("{} tokens", session.total_output_tokens).bright_cyan());
-            println!("{}", "╰─────────────────────────────────────────────────────────────────────────────╯".bright_cyan().bold());
+            println!(
+                "│  Session Input:     {:<48} │",
+                format!("{} tokens", session.total_input_tokens).bright_cyan()
+            );
+            println!(
+                "│  Session Output:    {:<48} │",
+                format!("{} tokens", session.total_output_tokens).bright_cyan()
+            );
+            println!(
+                "{}",
+                "╰─────────────────────────────────────────────────────────────────────────────╯"
+                    .bright_cyan()
+                    .bold()
+            );
         }
         "/memory" => {
             let mem = MemoryManager::new(&cfg.project_root);
@@ -237,7 +353,12 @@ fn handle_slash_command(
             }
         }
         "/exit" | "/quit" | "/q" => {
-            println!("{}", "👋 Exiting Deepak Bagada IND AI. Happy coding!".bright_cyan().bold());
+            println!(
+                "{}",
+                "👋 Exiting Deepak Bagada IND AI. Happy coding!"
+                    .bright_cyan()
+                    .bold()
+            );
             return Ok(true);
         }
         unknown => {
@@ -258,58 +379,64 @@ fn print_welcome_banner(cfg: &IndConfig) {
         cfg.model.clone()
     };
 
-    println!("{}", border_color("╭─────────────────────────────────────────────────────────────────────────────╮"));
     println!(
         "{}",
-        format!(
-            "│  {}  │",
-            "____  _____ _____ ____   _    _      ____    _    ____    _    ____   _  ".bright_cyan().bold()
+        border_color(
+            "╭─────────────────────────────────────────────────────────────────────────────╮"
         )
     );
     println!(
-        "{}",
-        format!(
-            "│ {} │",
-            "|  _ \\| ____| ____|  _ \\ / \\  | |/ /  | __ )  / \\  / ___|  / \\  |  _ \\ / \\ ".bright_cyan().bold()
-        )
+        "│  {}  │",
+        "____  _____ _____ ____   _    _      ____    _    ____    _    ____   _  "
+            .bright_cyan()
+            .bold()
+    );
+    println!(
+        "│ {} │",
+        "|  _ \\| ____| ____|  _ \\ / \\  | |/ /  | __ )  / \\  / ___|  / \\  |  _ \\ / \\ "
+            .bright_cyan()
+            .bold()
+    );
+    println!(
+        "│ {} │",
+        "| | | |  _| |  _| | |_) / _ \\ | ' /   |  _ \\ / _ \\| |  _  / _ \\ | | | / _ \\"
+            .bright_cyan()
+            .bold()
+    );
+    println!(
+        "│ {} │",
+        "| |_| | |___| |___|  __/ ___ \\| . \\   | |_) / ___ \\ |_| |/ ___ \\| |_| / ___ \\"
+            .bright_cyan()
+            .bold()
+    );
+    println!(
+        "│ {} │",
+        "|____/|_____|_____|_| /_/   \\_\\_|\\_\\  |____/_/   \\_\\____/_/   \\_\\____/_/   \\_\\"
+            .bright_cyan()
+            .bold()
     );
     println!(
         "{}",
-        format!(
-            "│ {} │",
-            "| | | |  _| |  _| | |_) / _ \\ | ' /   |  _ \\ / _ \\| |  _  / _ \\ | | | / _ \\".bright_cyan().bold()
+        border_color(
+            "│                                                                             │"
         )
     );
     println!(
-        "{}",
-        format!(
-            "│ {} │",
-            "| |_| | |___| |___|  __/ ___ \\| . \\   | |_) / ___ \\ |_| |/ ___ \\| |_| / ___ \\".bright_cyan().bold()
-        )
+        "│                   {}                   │",
+        "⚡ IND AI — NATIVE RUST CODING TERMINAL ⚡"
+            .bright_magenta()
+            .bold()
+    );
+    println!(
+        "│                       {}                      │",
+        "Created by Deepak Bagada".bright_yellow().bold()
     );
     println!(
         "{}",
-        format!(
-            "│ {} │",
-            "|____/|_____|_____|_| /_/   \\_\\_|\\_\\  |____/_/   \\_\\____/_/   \\_\\____/_/   \\_\\".bright_cyan().bold()
+        border_color(
+            "├─────────────────────────────────────────────────────────────────────────────┤"
         )
     );
-    println!("{}", border_color("│                                                                             │"));
-    println!(
-        "{}",
-        format!(
-            "│                   {}                   │",
-            "⚡ IND AI — NATIVE RUST CODING TERMINAL ⚡".bright_magenta().bold()
-        )
-    );
-    println!(
-        "{}",
-        format!(
-            "│                       {}                      │",
-            "Created by Deepak Bagada".bright_yellow().bold()
-        )
-    );
-    println!("{}", border_color("├─────────────────────────────────────────────────────────────────────────────┤"));
     println!(
         "│  {} {:<57} │",
         "📁 Project: ".bright_green().bold(),
@@ -318,18 +445,32 @@ fn print_welcome_banner(cfg: &IndConfig) {
     println!(
         "│  {} {:<57} │",
         "🤖 Provider:".bright_green().bold(),
-        format!("{} ({})", cfg.provider.yellow().bold(), model_display.bold())
+        format!(
+            "{} ({})",
+            cfg.provider.yellow().bold(),
+            model_display.bold()
+        )
     );
     println!(
         "│  {} {:<57} │",
         "⚡ Mode:    ".bright_green().bold(),
-        format!("Tiered Model Routing + Token-Budget Context (~50% savings)").bright_white()
+        "Tiered Model Routing + Token-Budget Context (~50% savings)"
+            .to_string()
+            .bright_white()
     );
     println!(
         "│  {} {:<57} │",
         "💡 Quicktip:".bright_green().bold(),
-        format!("Type coding prompt or {} for slash commands", "/help".bright_cyan().bold())
+        format!(
+            "Type coding prompt or {} for slash commands",
+            "/help".bright_cyan().bold()
+        )
     );
-    println!("{}", border_color("╰─────────────────────────────────────────────────────────────────────────────╯"));
+    println!(
+        "{}",
+        border_color(
+            "╰─────────────────────────────────────────────────────────────────────────────╯"
+        )
+    );
     println!();
 }
