@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.ind/
+*.log
+
+.agents/
+.codex/
+output/
+MEMORY.md
+build-report.md
+*.tgz
+.DS_Store
+

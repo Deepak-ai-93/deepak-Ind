@@ -1,0 +1,203 @@
+{
+  "app": {
+    "name": "IND",
+    "one_liner": "A cross-platform terminal coding agent that saves tokens, chunks work, shows usage, and remembers the project.",
+    "audience": "Individual developers and small engineering teams using terminal-based AI coding tools.",
+    "platform": "Cross-platform terminal CLI for Windows, macOS, and Linux",
+    "monetized": false,
+    "pricing": "Free and local-first for MVP; future open-core or hosted team features are out of scope.",
+    "mode": "new",
+    "idea_verbatim": "I want to build my own terminal coding tool like PI, named IND, with less AI token usage, chunked tasks, usage monitoring in the terminal, and memory. It should work on all devices and support local and all providers.",
+    "stack_preference": "No fixed stack; choose a portable TypeScript and Node.js CLI architecture.",
+    "scope": "IND MVP: a provider-neutral, token-efficient, chunked terminal coding agent with live usage telemetry and project memory.",
+    "validation": {
+      "scores": [5, 4, 3, 3, 4, 4, 3],
+      "total": 26,
+      "verdict": "ITERATE",
+      "guardrail": "Within 30 days of public testing, produce 10 benchmark runs across at least three environments and demonstrate median input-token reduction of at least 20 percent without reducing verified task completion.",
+      "risks": [
+        "Existing agents already provide compaction and broad provider support.",
+        "Provider capability differences can make tools unreliable under one abstraction.",
+        "Token savings can be overstated unless compared with a fixed baseline.",
+        "Cross-platform terminal behavior requires Windows, macOS, and Linux verification."
+      ],
+      "economics": {
+        "price": "Free for MVP",
+        "variable_cost": "None when users bring keys or run local models",
+        "margin": "Not applicable to MVP",
+        "cac": "Community and open-source distribution",
+        "payback": "Future hosted features only",
+        "ltv": "Future hosted features only"
+      },
+      "moves": [
+        {"move":"Run a fixed 10-task benchmark against a full-context baseline","status":"planned","result":""},
+        {"move":"Observe five developers using terminal coding agents","status":"planned","result":""},
+        {"move":"Publish results across one local and two hosted providers","status":"planned","result":""}
+      ]
+    },
+    "problem": {
+      "statement": "Terminal coding agents often send irrelevant repository context, repeat history, hide token and cost usage, execute oversized loops, and lose project decisions between sessions.",
+      "proof": "Pi documents compaction and context thresholds; Aider documents repository mapping; OpenCode documents broad provider support. These validate the category while leaving room for a transparent efficiency layer.",
+      "workaround": "Developers manually choose files, paste summaries, interrupt agents, inspect provider dashboards, and keep separate notes.",
+      "jtbd": "When I ask an AI coding agent to change my project, I want it to use only the context needed, work in safe chunks, show what it costs, and remember enough for the next session."
+    },
+    "personas": [
+      {"name":"The Cost-Conscious Builder","who":"A solo developer using hosted APIs for daily coding tasks.","pain":"Repeated context and hidden usage make experiments expensive.","success":"Completes the same verified tasks with a visible, lower token ledger."},
+      {"name":"The Local-First Developer","who":"A developer running Ollama or another OpenAI-compatible local endpoint.","pain":"Provider tooling assumes cloud services and inconsistent capabilities.","success":"Uses local models with the same task, memory, and terminal workflow."},
+      {"name":"The Terminal Team","who":"A small team that wants repeatable agent sessions without a hosted control plane.","pain":"Decisions and task state disappear between sessions.","success":"Reloads portable project memory and sees an auditable task history."}
+    ],
+    "mvp": {
+      "must": [
+        "Start an IND session in any supported terminal and detect the project root.",
+        "Inspect the repository and build a relevance-ranked context set instead of sending the whole tree.",
+        "Plan a request into bounded task chunks with a visible checkpoint before each execution chunk.",
+        "Execute file edits and verification commands through a safe tool loop with approval settings.",
+        "Support a common provider adapter contract for OpenAI-compatible endpoints plus native adapters for OpenAI, Anthropic, and Google.",
+        "Apply context compression, output truncation, prompt caching where available, and configurable token budgets.",
+        "Show live input tokens, output tokens, estimated cost, latency, provider, model, savings, and chunk status in the terminal.",
+        "Persist project memory as Markdown and structured session usage as SQLite, then reload it on the next session.",
+        "Provide a deterministic benchmark command comparing IND context usage to a full-context baseline."
+      ],
+      "should": [
+        "Allow model routing by task type, using a cheap model for summaries and a stronger model for difficult edits.",
+        "Support Ollama discovery and an explicit custom OpenAI-compatible base URL.",
+        "Offer commands to inspect, edit, export, and reset project memory.",
+        "Provide JSONL session events for external dashboards without making a dashboard part of the MVP."
+      ],
+      "wont": [
+        "Native desktop or mobile applications.",
+        "Hosted accounts, billing, team collaboration, or remote memory sync.",
+        "Unattended destructive commands or autonomous operation without safety controls.",
+        "Every provider-specific feature on the first release."
+      ]
+    },
+    "flows": [
+      "User runs ind in a repository, selects or enters a task, reviews the generated plan and context budget, approves a chunk, watches the agent edit files and run verification, then continues or revises the next chunk.",
+      "User starts a session with a configured local or hosted provider, sees the provider/model and live usage bar, switches model or budget, and completes the task without changing the core workflow.",
+      "User exits and later runs ind resume; IND loads project memory, recent task state, changed files, and usage history, then proposes the next safe chunk."
+    ],
+    "data_model": {
+      "tables": [
+        {"entity":"projects","fields":"id, root_path, display_name, created_at, updated_at","relations":"one project has many sessions and memory entries"},
+        {"entity":"sessions","fields":"id, project_id, provider, model, started_at, ended_at, status, input_tokens, output_tokens, estimated_cost","relations":"many sessions belong to one project"},
+        {"entity":"chunks","fields":"id, session_id, sequence, title, goal, status, input_tokens, output_tokens, started_at, completed_at","relations":"many chunks belong to one session"},
+        {"entity":"usage_events","fields":"id, session_id, chunk_id, provider, model, event_type, input_tokens, output_tokens, cached_tokens, latency_ms, estimated_cost, created_at","relations":"many usage events belong to a session and optional chunk"},
+        {"entity":"memory_entries","fields":"id, project_id, category, key, content, source, importance, created_at, updated_at","relations":"many memory entries belong to one project and mirror selected Markdown sections"}
+      ]
+    },
+    "auth": [
+      "No IND account auth in MVP; provider credentials stay in environment variables or an OS-appropriate local credential store.",
+      "The CLI must never print secret values, write them to project memory, or send them to a model.",
+      "File and command permissions are controlled locally by the user and explicit approval settings."
+    ],
+    "payments": [],
+    "kpis": {
+      "metric": "Median input-token reduction, verified task completion, chunk success rate, session resume success, and usage-ledger completeness.",
+      "tools": "Local benchmark JSONL, SQLite usage ledger, and reproducible fixture repositories.",
+      "guardrail": "At least 20 percent median input-token reduction with no more than 10 percent regression in verified benchmark completion."
+    },
+    "risks": [
+      "A common adapter contract may not expose equivalent tool calling, streaming, reasoning, or usage fields across providers.",
+      "Repository indexing can itself consume time and tokens if implemented as a full scan on every turn.",
+      "Estimated cost for local models is not monetary and must be labeled separately from cloud cost.",
+      "Command execution is security-sensitive and needs explicit allow, deny, and approval behavior."
+    ],
+    "decisions": [
+      "Interpret all devices as cross-platform desktop terminals rather than native mobile apps.",
+      "Use a capability-based adapter interface: common chat, streaming, tool call, usage, and cancellation capabilities with graceful fallbacks.",
+      "Use SQLite for metrics and Markdown for portable memory so users can inspect and version the important state.",
+      "Keep the first release free and bring-your-own-key; defer hosted sync and billing."
+    ],
+    "ai": {
+      "features": [
+        {"feature":"Repository context selection","value":"Selects the smallest relevant file and symbol set for a task.","model":"cheap local or fast hosted model with deterministic heuristics first","streaming":false,"cost_rail":"Hard input and output caps; prefer indexed metadata and cached summaries over raw file contents.","evals":"10 fixture tasks with expected relevant files and token ceilings."},
+        {"feature":"Task planning and chunk execution","value":"Turns a request into bounded, reviewable coding chunks and produces edits plus verification steps.","model":"cheap model for plan normalization; stronger configured model for hard edits","streaming":true,"cost_rail":"Per-chunk budget, maximum tool turns, timeout, cancellation, and model routing policy.","evals":"Golden repository tasks covering add, modify, refactor, test, and bug-fix flows."},
+        {"feature":"Memory summarization","value":"Compresses completed work and decisions into portable project memory.","model":"cheap model with a strict schema and deterministic fallback","streaming":false,"cost_rail":"Summarize only changed files and unresolved decisions; never resummarize unchanged memory.","evals":"Continuation tests where a new session must recover decisions and next steps."}
+      ],
+      "non_ai_fallback":"Use deterministic file relevance rules, Git diff metadata, task chunk templates, and explicit user selection when a model is unavailable or exceeds budget.",
+      "kill_guardrail":"If context selection does not reduce median input tokens by 20 percent or memory continuation fails in 4 of 5 tests, redesign those subsystems before broadening provider support."
+    },
+    "design": {
+      "source":"pack",
+      "link":"none",
+      "accent_hsl":"174 72% 45%",
+      "notes":"Dark terminal-first interface with teal accent, semantic green/yellow/red states, compact status bar, explicit token ledger, no decorative panels. Must remain usable without color."
+    },
+    "stack": {
+      "framework":"Node.js 20+ CLI with TypeScript and a thin command dispatcher",
+      "ui":"Ink-based terminal UI with ANSI-safe fallback output",
+      "fonts":"Terminal default; no web fonts",
+      "data":"SQLite via better-sqlite3 or a portable equivalent plus Markdown memory files",
+      "auth":"No account auth in MVP; environment variables and local credential storage",
+      "payments":"None in MVP",
+      "hosting":"npm package and platform-specific release artifacts",
+      "analytics":"Local SQLite usage ledger and opt-in JSONL export; no remote analytics by default",
+      "notes":"Use provider adapters, capability detection, AbortController cancellation, zod schemas, Vitest, and fixture repositories. Keep the core independent from any single provider SDK."
+    },
+    "deploy": {"host":"npm and GitHub Releases","domain":"not applicable"},
+    "routes": [
+      {"route":"/ind","purpose":"Start an interactive coding session in the current project","group":"CLI","auth":"local credentials and local permissions","status":"new"},
+      {"route":"/ind run <task>","purpose":"Run a task non-interactively or in scripted mode","group":"CLI","auth":"local credentials and local permissions","status":"new"},
+      {"route":"/ind resume","purpose":"Resume the latest incomplete or recent project session","group":"CLI","auth":"local credentials and local permissions","status":"new"},
+      {"route":"/ind usage","purpose":"Inspect session and project token, cost, latency, and savings history","group":"CLI","auth":"local project access","status":"new"},
+      {"route":"/ind memory","purpose":"Read, edit, export, or reset project memory","group":"CLI","auth":"local project access","status":"new"},
+      {"route":"/ind benchmark","purpose":"Run the IND versus baseline efficiency benchmark","group":"CLI","auth":"local project access and optional provider credentials","status":"new"},
+      {"route":"/ind providers","purpose":"List configured providers, models, and detected capabilities","group":"CLI","auth":"local credentials","status":"new"}
+    ],
+    "pages": [
+      {"route":"/ind","name":"Interactive session","purpose":"Enter a task and execute it through visible chunks.","layout":"Full-screen terminal TUI with header, transcript, chunk rail, and usage footer.","auth":"local","components":"command prompt, task plan, chunk list, diff preview, approval prompt, tool output, token ledger, status bar","data":"project metadata, memory summary, configured provider/model, current session and usage events","actions":"create session, plan task, approve or reject chunk, edit settings, cancel request, continue next chunk","states":"first-run setup, provider missing, idle, planning, waiting approval, streaming, tool running, verification, error, canceled, complete","navigation":"ind opens a session; resume returns to the latest state; usage and memory are separate commands"},
+      {"route":"/ind usage","name":"Usage report","purpose":"Explain where tokens and time were spent and what IND saved.","layout":"Readable table output with optional compact TUI view.","auth":"local","components":"date/model filters, session table, chunk table, totals, savings comparison, export action","data":"SQLite sessions, chunks, and usage events","actions":"filter, compare baseline, export JSONL, reset local metrics","states":"no sessions, partial usage, complete report, unavailable cost metadata","navigation":"from any session with a keyboard shortcut or standalone command"},
+      {"route":"/ind memory","name":"Project memory","purpose":"Make persistent context inspectable and maintainable.","layout":"Markdown-first output with category summaries and edit commands.","auth":"local","components":"memory sections, recent decisions, open questions, file references, edit/export/reset commands","data":"MEMORY.md and memory_entries table","actions":"show, add, compact, export, edit, reset","states":"missing memory, initialized, stale memory, conflict between Markdown and SQLite","navigation":"opened from session or standalone command"},
+      {"route":"/ind benchmark","name":"Efficiency benchmark","purpose":"Measure token savings and completion quality against a baseline.","layout":"Progressive terminal report with machine-readable JSONL output.","auth":"local","components":"fixture selector, provider matrix, baseline toggle, progress, results table, report path","data":"fixture repositories, benchmark runs, usage events","actions":"run, cancel, compare, export report","states":"missing provider, fixture failure, running, completed, incomplete","navigation":"standalone command or post-session suggestion"}
+    ],
+    "backend": {
+      "folder":"src/cli, src/core, src/providers, src/context, src/memory, src/usage, src/tools, src/terminal, src/benchmark, src/storage",
+      "endpoints":[
+        {"method":"command","path":"ind","purpose":"Start interactive session","auth":"local","input":"task text, optional flags, local config"},
+        {"method":"command","path":"ind run","purpose":"Execute one task with chunk controls","auth":"local","input":"task text, provider, model, budget, approval mode"},
+        {"method":"command","path":"ind usage","purpose":"Read usage ledger and savings report","auth":"local","input":"date range, project, session, output format"},
+        {"method":"command","path":"ind memory","purpose":"Manage project memory","auth":"local","input":"subcommand, category, content"},
+        {"method":"command","path":"ind benchmark","purpose":"Run fixture benchmark","auth":"local","input":"fixture set, provider matrix, baseline, output path"},
+        {"method":"adapter","path":"ProviderAdapter","purpose":"Normalize chat, streaming, tools, usage, cancellation, and capabilities","auth":"provider credential","input":"messages, tools, model settings, abort signal"}
+      ],
+      "auth_flow":["Load provider credentials from environment or local credential store.","Resolve the selected provider and model without printing secrets.","Expose only supported capabilities to the agent loop.","Record provider and model metadata in the local usage ledger."],
+      "payments_flow":[],
+      "env_vars":[
+        {"var":"OPENAI_API_KEY","example":"set in user environment","source":"OpenAI"},
+        {"var":"ANTHROPIC_API_KEY","example":"set in user environment","source":"Anthropic"},
+        {"var":"GOOGLE_GENERATIVE_AI_API_KEY","example":"set in user environment","source":"Google"},
+        {"var":"IND_BASE_URL","example":"http://localhost:11434/v1","source":"Local or OpenAI-compatible endpoint"},
+        {"var":"IND_MODEL","example":"local-model","source":"User configuration"}
+      ]
+    },
+    "workflows":[
+      {"title":"Task to verified chunk","steps":["Read project memory and Git status.","Parse the task and generate a bounded plan.","Rank relevant files and calculate the context budget.","Show the first chunk, expected edits, commands, and estimated usage.","Wait for approval according to the configured approval mode.","Stream the model response and execute only allowed tools.","Show the diff and run verification commands.","Record usage and outcome, update memory, and propose the next chunk."]},
+      {"title":"Provider selection","steps":["Read provider configuration.","Detect native and OpenAI-compatible endpoints.","Probe capabilities without sending project content.","Select a model using explicit configuration or task routing.","Fallback to deterministic behavior when the provider is unavailable."]},
+      {"title":"Resume session","steps":["Locate the project root and session database.","Load the latest memory and incomplete chunk.","Show changed files and unresolved decisions.","Recalculate a small context set rather than replaying the full transcript.","Ask for approval before continuing execution."]}
+    ],
+    "system_workflows":[
+      {"title":"Context efficiency","steps":["Use Git status and file metadata before reading content.","Use an indexed repository map and cached summaries.","Select only relevant files and symbols.","Truncate command output and deduplicate repeated observations.","Compact older session state at a configurable threshold.","Record baseline and actual input tokens for every model call."]},
+      {"title":"Usage ledger","steps":["Receive usage events from every adapter call.","Normalize token fields and mark estimates when unavailable.","Calculate cloud cost from configured price metadata.","Separate local compute metrics from monetary cost.","Render live totals in the terminal and persist SQLite rows."]},
+      {"title":"Memory update","steps":["Collect changed files, decisions, failures, and next steps.","Generate a schema-validated summary when a model is available.","Use a deterministic template fallback when it is not.","Append portable Markdown and upsert structured entries.","Load only relevant memory sections in future sessions."]}
+    ],
+    "build_order":[
+      {"step":1,"title":"Scaffold the cross-platform TypeScript CLI and configuration system","done":"The ind command launches on Windows, macOS, and Linux fixtures, prints help, and loads safe configuration.","prio":"P0"},
+      {"step":2,"title":"Implement provider adapter contract and OpenAI-compatible endpoint","done":"A streaming chat call, cancellation, capability detection, and normalized usage event work against a test server.","prio":"P0"},
+      {"step":3,"title":"Build repository inspection and token-efficient context selection","done":"Fixture tasks select relevant files, cache summaries, truncate output, and stay under configured budgets.","prio":"P0"},
+      {"step":4,"title":"Implement chunked task planning, approval, tools, edits, and verification","done":"A fixture coding task runs through visible chunks, applies a diff, executes an approved test, and records the result.","prio":"P0"},
+      {"step":5,"title":"Add SQLite usage ledger and live terminal monitor","done":"The terminal shows per-call and aggregate tokens, cost estimates, latency, provider, model, and baseline savings.","prio":"P0"},
+      {"step":6,"title":"Add Markdown plus SQLite project memory and resume","done":"A new session reloads decisions, changed files, open questions, and the next chunk without replaying the full transcript.","prio":"P0"},
+      {"step":7,"title":"Add native provider adapters and local runtime discovery","done":"OpenAI, Anthropic, Google, and at least one local OpenAI-compatible runtime pass the common adapter contract tests.","prio":"P1"},
+      {"step":8,"title":"Create benchmark fixtures and baseline comparison","done":"ind benchmark produces reproducible JSONL and Markdown results for token reduction, completion, latency, and failures.","prio":"P1"},
+      {"step":9,"title":"Harden cross-platform packaging, security, tests, and documentation","done":"Install, permissions, secret handling, cancellation, errors, and release artifacts pass the production audit.","prio":"P1"},
+      {"step":10,"title":"Add advanced routing and optional JSONL integrations","done":"Task-type model routing and opt-in event export work without changing the core workflow.","prio":"P2"}
+    ],
+    "extra_ideas":[
+      "A token budget planner that predicts cost before a chunk runs.",
+      "A replay mode for comparing provider and model choices on the same task.",
+      "Team policy files for command approvals and provider restrictions.",
+      "Optional hosted memory sync with end-to-end encryption.",
+      "A community benchmark leaderboard based on reproducible fixture repositories."
+    ]
+  }
+}

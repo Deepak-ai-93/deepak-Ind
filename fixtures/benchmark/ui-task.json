@@ -1,0 +1,7 @@
+{
+  "id": "ui-task",
+  "task": "update the button styles and add a button component test",
+  "root": "ui-task",
+  "expectedFiles": ["src/Button.tsx", "tests/Button.test.tsx"],
+  "budgetTokens": 100
+}

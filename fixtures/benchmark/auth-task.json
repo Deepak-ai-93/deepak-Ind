@@ -1,0 +1,7 @@
+{
+  "id": "auth-task",
+  "task": "add authentication logging and update the auth test",
+  "root": "auth-task",
+  "expectedFiles": ["src/auth.ts", "tests/auth.test.ts"],
+  "budgetTokens": 100
+}

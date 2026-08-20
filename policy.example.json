@@ -1,0 +1,6 @@
+{
+  "approval": "chunk",
+  "allowedProviders": ["openai-compatible", "openai", "anthropic", "google"],
+  "allowedCommands": ["npm (run )?(test|typecheck|build)$", "node .*"],
+  "deniedCommands": ["npm publish", "git push", "rm -rf", "del /s"]
+}

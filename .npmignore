@@ -1,0 +1,10 @@
+dist/**/*.test.js
+dist/**/*.test.js.map
+dist/**/*.map
+fixtures/
+.agents/
+.github/
+output/
+PRD.md
+TODO.md
+pack-plan.json
