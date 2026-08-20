@@ -157,33 +157,31 @@ impl ProviderAdapter for AnthropicAdapter {
                     continue;
                 };
 
-                if event_name == "message_start" {
-                    if let Some(input) = data
+                if event_name == "message_start"
+                    && let Some(input) = data
                         .get("message")
                         .and_then(|m| m.get("usage"))
                         .and_then(|u| u.get("input_tokens"))
                         .and_then(|v| v.as_u64())
-                    {
-                        let input = input as usize;
-                        usage = Some(Usage {
-                            input_tokens: input,
-                            output_tokens: 0,
-                            total_tokens: input,
-                            cached_tokens: None,
-                            estimated: false,
-                        });
-                    }
+                {
+                    let input = input as usize;
+                    usage = Some(Usage {
+                        input_tokens: input,
+                        output_tokens: 0,
+                        total_tokens: input,
+                        cached_tokens: None,
+                        estimated: false,
+                    });
                 }
-                if event_name == "content_block_delta" {
-                    if let Some(text) = data
+                if event_name == "content_block_delta"
+                    && let Some(text) = data
                         .get("delta")
                         .and_then(|d| d.get("text"))
                         .and_then(|t| t.as_str())
-                    {
-                        emit(ChatEvent::Delta {
-                            text: text.to_string(),
-                        });
-                    }
+                {
+                    emit(ChatEvent::Delta {
+                        text: text.to_string(),
+                    });
                 }
                 if event_name == "message_delta" {
                     if let Some(reason) = data
@@ -197,11 +195,10 @@ impl ProviderAdapter for AnthropicAdapter {
                         .get("usage")
                         .and_then(|u| u.get("output_tokens"))
                         .and_then(|v| v.as_u64())
+                        && let Some(usage_state) = usage.as_mut()
                     {
-                        if let Some(usage_state) = usage.as_mut() {
-                            usage_state.output_tokens = output as usize;
-                            usage_state.total_tokens = usage_state.input_tokens + output as usize;
-                        }
+                        usage_state.output_tokens = output as usize;
+                        usage_state.total_tokens = usage_state.input_tokens + output as usize;
                     }
                     if let Some(usage_state) = usage.clone() {
                         emit(ChatEvent::Usage { usage: usage_state });

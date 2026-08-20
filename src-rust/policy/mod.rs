@@ -44,15 +44,15 @@ pub fn load_policy(project_root: &Path) -> Result<IndPolicy, String> {
     let mut parsed: IndPolicy = serde_json::from_str(&text)
         .map_err(|e| format!("Invalid IND policy at {}: {}", path.display(), e))?;
 
-    if let Some(approval) = parsed.approval {
-        if !matches!(
+    if let Some(approval) = parsed.approval
+        && !matches!(
             approval,
             ApprovalMode::Chunk | ApprovalMode::Command | ApprovalMode::Never
-        ) {
-            return Err(format!(
-                "Invalid IND policy field 'approval': expected chunk, command, or never."
-            ));
-        }
+        )
+    {
+        return Err(
+            "Invalid IND policy field 'approval': expected chunk, command, or never.".to_string(),
+        );
     }
 
     parsed.allowed_providers = string_list(parsed.allowed_providers, "allowedProviders")?;
@@ -74,28 +74,28 @@ fn matches(command: &str, patterns: &[String]) -> Result<bool, String> {
 }
 
 pub fn assert_provider_allowed(provider: &str, policy: &IndPolicy) -> Result<(), String> {
-    if let Some(allowed) = &policy.allowed_providers {
-        if !allowed.iter().any(|p| p == provider) {
-            return Err(format!(
-                "Provider '{provider}' is blocked by IND team policy."
-            ));
-        }
+    if let Some(allowed) = &policy.allowed_providers
+        && !allowed.iter().any(|p| p == provider)
+    {
+        return Err(format!(
+            "Provider '{provider}' is blocked by IND team policy."
+        ));
     }
     Ok(())
 }
 
 pub fn assert_policy_command_allowed(command: &str, policy: &IndPolicy) -> Result<(), String> {
-    if let Some(denied) = &policy.denied_commands {
-        if matches(command, denied)? {
-            return Err(format!("Command blocked by IND team policy: {command}"));
-        }
+    if let Some(denied) = &policy.denied_commands
+        && matches(command, denied)?
+    {
+        return Err(format!("Command blocked by IND team policy: {command}"));
     }
-    if let Some(allowed) = &policy.allowed_commands {
-        if !matches(command, allowed)? {
-            return Err(format!(
-                "Command is not on the IND team policy allowlist: {command}"
-            ));
-        }
+    if let Some(allowed) = &policy.allowed_commands
+        && !matches(command, allowed)?
+    {
+        return Err(format!(
+            "Command is not on the IND team policy allowlist: {command}"
+        ));
     }
     Ok(())
 }

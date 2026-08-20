@@ -51,7 +51,7 @@ pub fn run_task_plan(
             ),
         });
 
-        if !options.approved_chunks.iter().any(|id| *id == chunk.id) {
+        if !options.approved_chunks.contains(&chunk.id) {
             chunk.status = "blocked".to_string();
             return Err(format!("Chunk {} is blocked until approved.", chunk.id));
         }

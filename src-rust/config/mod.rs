@@ -3,31 +3,21 @@ use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum ApprovalMode {
+    #[default]
     Chunk,
     Command,
     Never,
 }
 
-impl Default for ApprovalMode {
-    fn default() -> Self {
-        ApprovalMode::Chunk
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum RoutingMode {
+    #[default]
     Auto,
     Off,
-}
-
-impl Default for RoutingMode {
-    fn default() -> Self {
-        RoutingMode::Auto
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

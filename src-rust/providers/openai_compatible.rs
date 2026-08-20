@@ -221,12 +221,11 @@ impl ProviderAdapter for OpenAICompatibleAdapter {
                     .get("delta")
                     .and_then(|d| d.get("content"))
                     .and_then(|c| c.as_str())
+                    && !delta.is_empty()
                 {
-                    if !delta.is_empty() {
-                        emit(ChatEvent::Delta {
-                            text: delta.to_string(),
-                        });
-                    }
+                    emit(ChatEvent::Delta {
+                        text: delta.to_string(),
+                    });
                 }
             }
         }

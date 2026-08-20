@@ -178,12 +178,11 @@ impl ProviderAdapter for GoogleAdapter {
                     .and_then(|p| p.first())
                     .and_then(|p| p.get("text"))
                     .and_then(|t| t.as_str())
+                    && !text.is_empty()
                 {
-                    if !text.is_empty() {
-                        emit(ChatEvent::Delta {
-                            text: text.to_string(),
-                        });
-                    }
+                    emit(ChatEvent::Delta {
+                        text: text.to_string(),
+                    });
                 }
                 if let Some(metadata) = data.get("usageMetadata") {
                     let prompt = metadata.get("promptTokenCount").and_then(|v| v.as_u64());
