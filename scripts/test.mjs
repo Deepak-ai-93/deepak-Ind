@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs";
+﻿import { readdirSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -17,6 +17,7 @@ visit(root);
 files.sort();
 if (files.length === 0) throw new Error("No TypeScript test files found.");
 
-const result = spawnSync(process.execPath, ["--import", "tsx", "--test", ...files], { stdio: "inherit" });
+const result = spawnSync(process.execPath, ["--import", "tsx", "--test", "--test-concurrency=1", ...files], { stdio: "inherit" });
 if (result.error) throw result.error;
 process.exit(result.status ?? 1);
+
