@@ -4,27 +4,27 @@ IND is a cross-platform terminal coding agent focused on lower token usage, boun
 
 ## Install
 
+### Install directly from GitHub
+
 ```bash
+npm install -g github:Deepak-ai-93/deepak-Ind
+ind --help
+```
+
+The GitHub install automatically builds the CLI during installation. IND targets Node.js 20+ on Windows, macOS, and Linux.
+
+### Install from source
+
+```bash
+git clone https://github.com/Deepak-ai-93/deepak-Ind.git
+cd deepak-Ind
 npm install
 npm run build
 npm link
 ind --help
 ```
 
-IND targets Node.js 20+ on Windows, macOS, and Linux.
-
-## Install from GitHub
-
-After this project is pushed to a public GitHub repository, anyone can install the CLI directly:
-
-```bash
-npm install -g github:<owner>/<repo>
-ind --help
-```
-
 For npm distribution, publish the `ind-terminal` package and install it with `npm install -g ind-terminal`.
-
-
 
 ## Commands
 
@@ -100,6 +100,8 @@ npm pack --dry-run
 ```
 
 The CI workflow runs typecheck, tests, build, and package verification on Node.js 20.
+
+
 
 
 
