@@ -13,6 +13,21 @@ ind --help
 
 The GitHub install automatically builds the CLI during installation. IND targets Node.js 20+ on Windows, macOS, and Linux.
 
+### Run without global PATH setup
+
+If your terminal says `ind` is not recognized, use `npx`:
+
+```bash
+npx --yes --package=github:Deepak-ai-93/deepak-Ind ind --help
+```
+
+After publishing to npm, the simplest install will be:
+
+```bash
+npm install --global ind-terminal
+ind --help
+```
+
 ### Windows PowerShell troubleshooting
 
 Use the global flag exactly as shown:
@@ -117,6 +132,7 @@ npm pack --dry-run
 ```
 
 The CI workflow runs typecheck, tests, build, and package verification on Node.js 20.
+
 
 
 

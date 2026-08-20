@@ -1,4 +1,4 @@
-# Releasing IND
+﻿# Releasing IND
 
 Replace `<owner>/<repo>` with the GitHub repository before publishing.
 
@@ -10,6 +10,8 @@ ind --help
 ```
 
 ## npm release
+
+Publishing to npm is the recommended way for users to install IND globally on any supported device. Vercel is not required for CLI distribution; use it only for an optional website or hosted dashboard.
 
 ```bash
 npm login
@@ -26,3 +28,4 @@ The `prepublishOnly` script runs typecheck, tests, and the production build. Ver
 3. Enable Issues and private security reporting.
 4. Add the repository URL to `package.json`.
 5. Create a GitHub release matching the npm version.
+
