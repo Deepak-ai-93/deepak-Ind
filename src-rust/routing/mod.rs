@@ -66,7 +66,9 @@ pub fn classify_task(task: &str) -> TaskKind {
 
 pub fn route_task(task: &str, config: &IndConfig) -> RouteDecision {
     let kind = classify_task(task);
-    if config.routing == RoutingMode::Off || config.cheap_model.is_empty() || config.strong_model.is_empty()
+    if config.routing == RoutingMode::Off
+        || config.cheap_model.is_empty()
+        || config.strong_model.is_empty()
     {
         return RouteDecision {
             kind,
@@ -75,8 +77,9 @@ pub fn route_task(task: &str, config: &IndConfig) -> RouteDecision {
             reason: "automatic routing is disabled or tier models are not configured".to_string(),
         };
     }
-    let cheap_kinds: HashSet<TaskKind> =
-        [TaskKind::Summarize, TaskKind::Inspect].into_iter().collect();
+    let cheap_kinds: HashSet<TaskKind> = [TaskKind::Summarize, TaskKind::Inspect]
+        .into_iter()
+        .collect();
     if cheap_kinds.contains(&kind) {
         let reason = PATTERNS
             .iter()

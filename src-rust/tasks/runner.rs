@@ -1,5 +1,5 @@
 use crate::tasks::types::{ChunkAction, FileEditAction, TaskPlan};
-use crate::tools::commands::{run_project_command, CommandResult, RunCommandOptions};
+use crate::tools::commands::{CommandResult, RunCommandOptions, run_project_command};
 use crate::tools::files::write_project_file;
 use std::collections::HashMap;
 use std::path::Path;
@@ -172,19 +172,17 @@ mod tests {
         .unwrap_err();
         assert!(err.contains("blocked until approved"));
         assert_eq!(plan.chunks[0].status, "blocked");
-        assert!(events
-            .iter()
-            .any(|e| matches!(e, TaskRunEvent::ApprovalRequired { .. })));
+        assert!(
+            events
+                .iter()
+                .any(|e| matches!(e, TaskRunEvent::ApprovalRequired { .. }))
+        );
     }
 
     #[test]
     fn passes_approved_empty_chunks() {
         let mut plan = create_plan();
-        let approved = plan
-            .chunks
-            .iter()
-            .map(|c| c.id.clone())
-            .collect::<Vec<_>>();
+        let approved = plan.chunks.iter().map(|c| c.id.clone()).collect::<Vec<_>>();
         let mut events = Vec::new();
         run_task_plan(
             &mut plan,
@@ -198,9 +196,11 @@ mod tests {
         )
         .unwrap();
         assert!(plan.chunks.iter().all(|c| c.status == "passed"));
-        assert!(events
-            .iter()
-            .any(|e| matches!(e, TaskRunEvent::PlanComplete { .. })));
+        assert!(
+            events
+                .iter()
+                .any(|e| matches!(e, TaskRunEvent::PlanComplete { .. }))
+        );
     }
 
     #[test]
@@ -209,11 +209,7 @@ mod tests {
         std::fs::create_dir_all(&dir).unwrap();
 
         let mut plan = create_plan();
-        let approved = plan
-            .chunks
-            .iter()
-            .map(|c| c.id.clone())
-            .collect::<Vec<_>>();
+        let approved = plan.chunks.iter().map(|c| c.id.clone()).collect::<Vec<_>>();
         let mut actions = HashMap::new();
         actions.insert(
             chunk_id(&plan),

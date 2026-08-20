@@ -142,10 +142,15 @@ fn print_policy() {
     let cfg = config::load_config(None);
     match policy::load_policy(&cfg.project_root) {
         Ok(p) => {
-            println!("policy: {}", policy::policy_path(&cfg.project_root).display());
+            println!(
+                "policy: {}",
+                policy::policy_path(&cfg.project_root).display()
+            );
             println!(
                 "approval: {}",
-                p.approval.map(|a| format!("{a:?}")).unwrap_or_else(|| "config default".to_string())
+                p.approval
+                    .map(|a| format!("{a:?}"))
+                    .unwrap_or_else(|| "config default".to_string())
             );
             println!(
                 "providers: {}",
@@ -253,7 +258,10 @@ fn print_budget(task: &str) -> Result<(), String> {
         "input: ~{} tokens (context {})",
         budget.estimated_input_tokens, budget.context_tokens
     );
-    println!("output allowance: ~{} tokens", budget.estimated_output_tokens);
+    println!(
+        "output allowance: ~{} tokens",
+        budget.estimated_output_tokens
+    );
     println!("tool turns: {}", budget.estimated_tool_turns);
     println!("total allowance: ~{} tokens", budget.estimated_total_tokens);
     println!("baseline input: ~{} tokens", budget.baseline_input_tokens);
@@ -272,7 +280,11 @@ fn run_task(task: &str) -> Result<(), String> {
     let cfg = config::load_config(None);
     let mut plan = tasks::planner::create_task_plan(task, &[])?;
     let selection = context::inspect_and_select(&cfg.project_root, task, cfg.max_input_tokens)?;
-    plan.context_files = selection.selected.iter().map(|f| f.relative_path.clone()).collect();
+    plan.context_files = selection
+        .selected
+        .iter()
+        .map(|f| f.relative_path.clone())
+        .collect();
 
     println!("{} {}", "Executing task:".bold().cyan(), plan.task);
     println!(
@@ -355,7 +367,9 @@ fn print_memory(sub: Option<MemorySubcommands>) -> Result<(), String> {
             let url = url
                 .or_else(|| std::env::var("IND_SYNC_URL").ok())
                 .filter(|s| !s.trim().is_empty());
-            let secret = std::env::var("IND_SYNC_KEY").ok().filter(|s| !s.trim().is_empty());
+            let secret = std::env::var("IND_SYNC_KEY")
+                .ok()
+                .filter(|s| !s.trim().is_empty());
             match (url, secret) {
                 (Some(_url), Some(_secret)) => {
                     eprintln!(
@@ -364,16 +378,14 @@ fn print_memory(sub: Option<MemorySubcommands>) -> Result<(), String> {
                     );
                     println!("Syncing memory ({action})...");
                 }
-                _ => {
-                    return Err(
-                        "Memory sync requires IND_SYNC_URL and IND_SYNC_KEY.".to_string()
-                    )
-                }
+                _ => return Err("Memory sync requires IND_SYNC_URL and IND_SYNC_KEY.".to_string()),
             }
         }
         None => {
             println!("{}", "Viewing Project Memory:".bold().cyan());
-            let content = mem.read().map_err(|e| format!("Failed to read memory: {e}"))?;
+            let content = mem
+                .read()
+                .map_err(|e| format!("Failed to read memory: {e}"))?;
             if content.trim().is_empty() {
                 println!("No MEMORY.md found at {}", cfg.project_root.display());
             } else {
@@ -447,15 +459,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(())
         }
         Some(Commands::Leaderboard) => {
-            println!("{}", "Running reproducible benchmark leaderboard...".bold().cyan());
+            println!(
+                "{}",
+                "Running reproducible benchmark leaderboard..."
+                    .bold()
+                    .cyan()
+            );
             println!("  Reports: output/benchmark");
             Ok(())
         }
         Some(Commands::Doctor) => {
-            println!("{}", "Running IND Doctor diagnostics (Rust Native)...".bold().green());
+            println!(
+                "{}",
+                "Running IND Doctor diagnostics (Rust Native)..."
+                    .bold()
+                    .green()
+            );
             println!("  Project Root: {}", cfg.project_root.display());
             println!("  Provider: {}", cfg.provider);
-            println!("  Approval Mode: {:?} (Auto-approved on Phase 1)", cfg.approval);
+            println!(
+                "  Approval Mode: {:?} (Auto-approved on Phase 1)",
+                cfg.approval
+            );
             println!("  Max input tokens: {}", cfg.max_input_tokens);
             println!("  Max output tokens: {}", cfg.max_output_tokens);
             println!("  Max tool turns: {}", cfg.max_tool_turns);
@@ -472,10 +497,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None => {
             let task_str = cli.task.join(" ");
             if task_str.trim().is_empty() {
-                println!("{}", "==================================================".cyan());
-                println!("{} - Ultra-low memory, zero-dependency coding agent", "IND (Rust Native)".bold().green());
-                println!("Type {} for commands or pass a task to start.", "ind --help".bold());
-                println!("{}", "==================================================".cyan());
+                println!(
+                    "{}",
+                    "==================================================".cyan()
+                );
+                println!(
+                    "{} - Ultra-low memory, zero-dependency coding agent",
+                    "IND (Rust Native)".bold().green()
+                );
+                println!(
+                    "Type {} for commands or pass a task to start.",
+                    "ind --help".bold()
+                );
+                println!(
+                    "{}",
+                    "==================================================".cyan()
+                );
                 Ok(())
             } else {
                 run_task(&task_str)

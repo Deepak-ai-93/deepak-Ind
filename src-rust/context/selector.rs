@@ -1,10 +1,12 @@
 use std::collections::HashSet;
 
-use crate::context::repository::{inspect_repository, read_repository_file, RepositoryFile, RepositorySnapshot};
+use crate::context::repository::{
+    RepositoryFile, RepositorySnapshot, inspect_repository, read_repository_file,
+};
 
 const STOP_WORDS: &[&str] = &[
-    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "in", "is", "it", "of",
-    "on", "or", "that", "the", "to", "with",
+    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "in", "is", "it", "of", "on",
+    "or", "that", "the", "to", "with",
 ];
 
 #[derive(Debug, Clone)]
@@ -52,8 +54,15 @@ fn score_file(file: &RepositoryFile, task_terms: &[String]) -> (i64, String) {
     let path = file.relative_path.to_lowercase();
     let basename = path.rsplit('/').next().unwrap_or(&path).to_string();
     let documentation = file.extension == ".md" || file.extension == ".txt";
-    let mut score = if file.is_source && !documentation { 2 } else { 0 };
-    let matches: Vec<&String> = task_terms.iter().filter(|term| path.contains(*term)).collect();
+    let mut score = if file.is_source && !documentation {
+        2
+    } else {
+        0
+    };
+    let matches: Vec<&String> = task_terms
+        .iter()
+        .filter(|term| path.contains(*term))
+        .collect();
     score += (matches.len() * 12) as i64;
     if basename.contains("test") || basename.contains("spec") {
         score += 1;
@@ -89,7 +98,11 @@ fn score_file(file: &RepositoryFile, task_terms: &[String]) -> (i64, String) {
     (score, reason)
 }
 
-pub fn select_context(snapshot: &RepositorySnapshot, task: &str, budget_tokens: usize) -> Result<ContextSelection, String> {
+pub fn select_context(
+    snapshot: &RepositorySnapshot,
+    task: &str,
+    budget_tokens: usize,
+) -> Result<ContextSelection, String> {
     if budget_tokens == 0 {
         return Err("Context budget must be a positive integer.".to_string());
     }
@@ -103,7 +116,8 @@ pub fn select_context(snapshot: &RepositorySnapshot, task: &str, budget_tokens: 
         })
         .collect();
     ranked.sort_by(|a, b| {
-        b.1.cmp(&a.1).then_with(|| a.0.relative_path.cmp(&b.0.relative_path))
+        b.1.cmp(&a.1)
+            .then_with(|| a.0.relative_path.cmp(&b.0.relative_path))
     });
 
     let mut selected = Vec::new();
@@ -156,7 +170,11 @@ pub fn select_context(snapshot: &RepositorySnapshot, task: &str, budget_tokens: 
     })
 }
 
-pub fn inspect_and_select(project_root: &std::path::Path, task: &str, budget_tokens: usize) -> Result<ContextSelection, String> {
+pub fn inspect_and_select(
+    project_root: &std::path::Path,
+    task: &str,
+    budget_tokens: usize,
+) -> Result<ContextSelection, String> {
     let snapshot = inspect_repository(project_root).map_err(|e| e.to_string())?;
     select_context(&snapshot, task, budget_tokens)
 }
@@ -225,16 +243,20 @@ mod tests {
         let dir = make_tree();
         let snapshot = snapshot_for(&dir);
         let selection = select_context(&snapshot, "unrelated-task", 100).unwrap();
-        assert!(selection
-            .omitted
-            .iter()
-            .any(|o| o.relative_path == "package-lock.json"
-                && o.reason == "not relevant to task or supported source"));
-        assert!(selection
-            .omitted
-            .iter()
-            .any(|o| o.relative_path == "unrelated.rs"
-                && o.reason == "binary, unreadable, or too large"));
+        assert!(
+            selection
+                .omitted
+                .iter()
+                .any(|o| o.relative_path == "package-lock.json"
+                    && o.reason == "not relevant to task or supported source")
+        );
+        assert!(
+            selection
+                .omitted
+                .iter()
+                .any(|o| o.relative_path == "unrelated.rs"
+                    && o.reason == "binary, unreadable, or too large")
+        );
         fs::remove_dir_all(&dir).unwrap();
     }
 
@@ -244,7 +266,10 @@ mod tests {
         let snapshot = snapshot_for(&dir);
         let selection = select_context(&snapshot, "rust", 8).unwrap();
         assert_eq!(selection.selected.len(), 1);
-        assert_eq!(selection.omitted[0].reason, "budget exceeded (6 estimated tokens)");
+        assert_eq!(
+            selection.omitted[0].reason,
+            "budget exceeded (6 estimated tokens)"
+        );
         fs::remove_dir_all(&dir).unwrap();
     }
 }

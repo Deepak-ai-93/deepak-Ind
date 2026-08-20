@@ -2,7 +2,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use std::time::Duration;
 
-use crate::policy::{assert_policy_command_allowed, load_policy, IndPolicy};
+use crate::policy::{IndPolicy, assert_policy_command_allowed, load_policy};
 
 const MAX_OUTPUT_BYTES: usize = 32_000;
 const BLOCKED_PATTERNS: &[&str] = &[
@@ -191,7 +191,8 @@ mod tests {
         let probe = "Write-Output hello";
         #[cfg(not(target_os = "windows"))]
         let probe = "echo hello";
-        let result = run_project_command(probe, Path::new("."), &RunCommandOptions::default()).unwrap();
+        let result =
+            run_project_command(probe, Path::new("."), &RunCommandOptions::default()).unwrap();
         assert_eq!(result.exit_code, Some(0));
         assert!(result.stdout.to_lowercase().contains("hello"));
     }

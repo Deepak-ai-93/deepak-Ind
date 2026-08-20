@@ -1,4 +1,4 @@
-﻿use chrono::{SecondsFormat, Utc};
+use chrono::{SecondsFormat, Utc};
 use serde::{Deserialize, Serialize};
 use std::fs::{self, OpenOptions};
 use std::io::Write;
@@ -104,10 +104,7 @@ impl MemoryManager {
     ) -> Result<(), std::io::Error> {
         self.ensure_file()?;
         let date = Utc::now().format("%Y-%m-%d");
-        let mut lines = vec![
-            format!("\n---\n\n## {date}\n"),
-            "- **Did:**".to_string(),
-        ];
+        let mut lines = vec![format!("\n---\n\n## {date}\n"), "- **Did:**".to_string()];
         for item in did {
             lines.push(format!("  - {item}"));
         }
@@ -122,7 +119,12 @@ impl MemoryManager {
         lines.push(format!("- **Next:** {next}"));
         lines.push(String::new());
         self.append_raw(&lines.join("\n"))?;
-        for content in did.iter().chain(decided).chain(blocked).chain(std::iter::once(&next.to_string())) {
+        for content in did
+            .iter()
+            .chain(decided)
+            .chain(blocked)
+            .chain(std::iter::once(&next.to_string()))
+        {
             self.db.entries.push(MemoryEntry {
                 id: random_id(),
                 category: "session".to_string(),

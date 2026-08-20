@@ -1,6 +1,6 @@
-﻿use rusqlite::{params, Connection, Result};
-use std::path::Path;
 use chrono::Utc;
+use rusqlite::{Connection, Result, params};
+use std::path::Path;
 
 pub struct UsageLedger {
     conn: Connection,

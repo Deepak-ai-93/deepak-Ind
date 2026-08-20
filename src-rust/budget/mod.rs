@@ -60,8 +60,7 @@ pub fn create_budget_plan(
     chunk_count: usize,
     route: &RouteDecision,
 ) -> BudgetPlan {
-    let prompt_overhead =
-        (task.chars().count().div_ceil(2)).max(128) + chunk_count * 96;
+    let prompt_overhead = (task.chars().count().div_ceil(2)).max(128) + chunk_count * 96;
     let estimated_input_tokens = context.estimated_tokens + prompt_overhead;
     let estimated_output_tokens = output_allowance(config, route.kind);
     let estimated_tool_turns = config.max_tool_turns.min(chunk_count);
@@ -165,7 +164,11 @@ mod tests {
         let route = crate::routing::route_task("write a summary", &cfg);
         let plan = create_budget_plan(&cfg, &ctx, "write a summary", 3, &route);
         assert_eq!(plan.estimated_tool_turns, 3);
-        assert!(plan.warnings.iter().any(|w| w.contains("3 repository files")));
+        assert!(
+            plan.warnings
+                .iter()
+                .any(|w| w.contains("3 repository files"))
+        );
     }
 
     #[test]

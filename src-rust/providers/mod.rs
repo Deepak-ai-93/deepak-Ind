@@ -1,4 +1,4 @@
-﻿use async_trait::async_trait;
+use async_trait::async_trait;
 
 pub mod anthropic;
 pub mod discovery;
@@ -8,13 +8,13 @@ pub mod openai_compatible;
 pub mod types;
 
 pub use anthropic::AnthropicAdapter;
-pub use discovery::{discover_local_runtimes, LocalRuntime};
+pub use discovery::{LocalRuntime, discover_local_runtimes};
 pub use google::GoogleAdapter;
 pub use index::{create_configured_provider, local_runtime_summary, provider_summary};
 pub use openai_compatible::OpenAICompatibleAdapter;
 pub use types::{
-    error_event, ChatEvent, ChatMessage, ChatRequest, ChatRole, ChatTool, ProviderAdapter,
-    ProviderCapabilities, ProviderError, Usage,
+    ChatEvent, ChatMessage, ChatRequest, ChatRole, ChatTool, ProviderAdapter, ProviderCapabilities,
+    ProviderError, Usage, error_event,
 };
 
 #[async_trait]

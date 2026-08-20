@@ -22,9 +22,9 @@ fn safe_path(root: &Path, file_path: &str) -> Result<PathBuf, String> {
             }
         }
     };
-    let from_root = absolute.strip_prefix(&root_canonical).map_err(|_| {
-        format!("Refusing path outside project: {file_path}")
-    })?;
+    let from_root = absolute
+        .strip_prefix(&root_canonical)
+        .map_err(|_| format!("Refusing path outside project: {file_path}"))?;
     if from_root
         .components()
         .any(|c| matches!(c, Component::ParentDir))
@@ -43,7 +43,8 @@ fn safe_path(root: &Path, file_path: &str) -> Result<PathBuf, String> {
 
 pub fn read_project_file(root: &Path, file_path: &str) -> Result<String, String> {
     let absolute = safe_path(root, file_path)?;
-    fs::read_to_string(&absolute).map_err(|e| format!("Failed to read {}: {}", absolute.display(), e))
+    fs::read_to_string(&absolute)
+        .map_err(|e| format!("Failed to read {}: {}", absolute.display(), e))
 }
 
 pub fn write_project_file(

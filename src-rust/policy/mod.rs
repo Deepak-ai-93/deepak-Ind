@@ -45,7 +45,10 @@ pub fn load_policy(project_root: &Path) -> Result<IndPolicy, String> {
         .map_err(|e| format!("Invalid IND policy at {}: {}", path.display(), e))?;
 
     if let Some(approval) = parsed.approval {
-        if !matches!(approval, ApprovalMode::Chunk | ApprovalMode::Command | ApprovalMode::Never) {
+        if !matches!(
+            approval,
+            ApprovalMode::Chunk | ApprovalMode::Command | ApprovalMode::Never
+        ) {
             return Err(format!(
                 "Invalid IND policy field 'approval': expected chunk, command, or never."
             ));
@@ -73,7 +76,9 @@ fn matches(command: &str, patterns: &[String]) -> Result<bool, String> {
 pub fn assert_provider_allowed(provider: &str, policy: &IndPolicy) -> Result<(), String> {
     if let Some(allowed) = &policy.allowed_providers {
         if !allowed.iter().any(|p| p == provider) {
-            return Err(format!("Provider '{provider}' is blocked by IND team policy."));
+            return Err(format!(
+                "Provider '{provider}' is blocked by IND team policy."
+            ));
         }
     }
     Ok(())

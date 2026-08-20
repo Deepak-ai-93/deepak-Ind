@@ -58,15 +58,9 @@ pub fn provider_summary() -> Result<Vec<String>, String> {
         ),
         format!(
             "endpoint: {}",
-            config
-                .base_url
-                .as_deref()
-                .unwrap_or("provider default")
+            config.base_url.as_deref().unwrap_or("provider default")
         ),
-        format!(
-            "capabilities: {}",
-            capabilities.enabled_names().join(", ")
-        ),
+        format!("capabilities: {}", capabilities.enabled_names().join(", ")),
     ])
 }
 

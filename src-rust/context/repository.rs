@@ -6,14 +6,25 @@ use std::time::SystemTime;
 use chrono::{SecondsFormat, Utc};
 
 const IGNORED_DIRECTORIES: &[&str] = &[
-    ".git", ".hg", ".svn", "node_modules", "dist", "build", "coverage", ".ind", ".agents",
-    "output", ".next", "target", "vendor",
+    ".git",
+    ".hg",
+    ".svn",
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".ind",
+    ".agents",
+    "output",
+    ".next",
+    "target",
+    "vendor",
 ];
 
 const SOURCE_EXTENSIONS: &[&str] = &[
-    ".c", ".cc", ".cpp", ".css", ".go", ".h", ".hpp", ".html", ".java", ".js", ".json",
-    ".jsx", ".md", ".php", ".py", ".rb", ".rs", ".sh", ".sql", ".svelte", ".toml", ".ts",
-    ".tsx", ".vue", ".yaml", ".yml",
+    ".c", ".cc", ".cpp", ".css", ".go", ".h", ".hpp", ".html", ".java", ".js", ".json", ".jsx",
+    ".md", ".php", ".py", ".rb", ".rs", ".sh", ".sql", ".svelte", ".toml", ".ts", ".tsx", ".vue",
+    ".yaml", ".yml",
 ];
 
 #[derive(Debug, Clone)]
@@ -41,7 +52,12 @@ fn extension_of(name: &str) -> String {
     }
 }
 
-fn walk(root: &Path, current: &Path, files: &mut Vec<RepositoryFile>, ignored: &mut HashSet<String>) -> Result<(), std::io::Error> {
+fn walk(
+    root: &Path,
+    current: &Path,
+    files: &mut Vec<RepositoryFile>,
+    ignored: &mut HashSet<String>,
+) -> Result<(), std::io::Error> {
     let entries = fs::read_dir(current)?;
     for entry in entries {
         let entry = entry?;

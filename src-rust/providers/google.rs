@@ -3,8 +3,8 @@ use futures_util::StreamExt;
 use serde::Serialize;
 
 use crate::providers::types::{
-    error_event, ChatEvent, ChatMessage, ChatRequest, ChatRole, ProviderAdapter,
-    ProviderCapabilities, ProviderError, Usage,
+    ChatEvent, ChatMessage, ChatRequest, ChatRole, ProviderAdapter, ProviderCapabilities,
+    ProviderError, Usage, error_event,
 };
 
 #[derive(Debug, Clone)]
@@ -92,7 +92,11 @@ impl ProviderAdapter for GoogleAdapter {
             .iter()
             .filter(|m| m.role != ChatRole::System)
             .map(|m| GoogleContent {
-                role: if m.role == ChatRole::Assistant { "model" } else { "user" },
+                role: if m.role == ChatRole::Assistant {
+                    "model"
+                } else {
+                    "user"
+                },
                 parts: vec![GooglePart {
                     text: m.content.clone(),
                 }],
@@ -101,9 +105,8 @@ impl ProviderAdapter for GoogleAdapter {
 
         let body = GoogleBody {
             contents,
-            system_instruction: (!system.is_empty()).then(|| {
-                serde_json::json!({ "parts": [{ "text": system }] })
-            }),
+            system_instruction: (!system.is_empty())
+                .then(|| serde_json::json!({ "parts": [{ "text": system }] })),
             generation_config: GoogleGenerationConfig {
                 max_output_tokens: request.max_output_tokens,
                 temperature: request.temperature,
@@ -124,7 +127,9 @@ impl ProviderAdapter for GoogleAdapter {
             .json(&body)
             .send()
             .await
-            .map_err(|e| ProviderError::new("google", format!("Request failed: {e}"), None, true))?;
+            .map_err(|e| {
+                ProviderError::new("google", format!("Request failed: {e}"), None, true)
+            })?;
 
         if !response.status().is_success() {
             let status = response.status().as_u16();
@@ -182,7 +187,9 @@ impl ProviderAdapter for GoogleAdapter {
                 }
                 if let Some(metadata) = data.get("usageMetadata") {
                     let prompt = metadata.get("promptTokenCount").and_then(|v| v.as_u64());
-                    let candidates = metadata.get("candidatesTokenCount").and_then(|v| v.as_u64());
+                    let candidates = metadata
+                        .get("candidatesTokenCount")
+                        .and_then(|v| v.as_u64());
                     if let (Some(prompt), Some(candidates)) = (prompt, candidates) {
                         let total = metadata
                             .get("totalTokenCount")
@@ -204,7 +211,9 @@ impl ProviderAdapter for GoogleAdapter {
         if let Some(usage_state) = usage {
             emit(ChatEvent::Usage { usage: usage_state });
         }
-        emit(ChatEvent::Done { finish_reason: None });
+        emit(ChatEvent::Done {
+            finish_reason: None,
+        });
         Ok(())
     }
 }

@@ -117,7 +117,12 @@ pub struct ProviderError {
 }
 
 impl ProviderError {
-    pub fn new(provider: &str, message: impl Into<String>, status: Option<u16>, retryable: bool) -> Self {
+    pub fn new(
+        provider: &str,
+        message: impl Into<String>,
+        status: Option<u16>,
+        retryable: bool,
+    ) -> Self {
         Self {
             provider: provider.to_string(),
             message: message.into(),
@@ -136,7 +141,9 @@ impl std::fmt::Display for ProviderError {
 impl std::error::Error for ProviderError {}
 
 pub fn error_event(provider: &str, message: String) -> ChatEvent {
-    ChatEvent::Error { message: format!("[{provider}] {message}") }
+    ChatEvent::Error {
+        message: format!("[{provider}] {message}"),
+    }
 }
 
 #[async_trait::async_trait]

@@ -1,4 +1,4 @@
-﻿use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -72,7 +72,11 @@ pub fn find_project_root(start: Option<&Path>) -> PathBuf {
 
     let mut current = current_dir.clone();
     loop {
-        if current.join(".git").exists() || current.join(".ind").exists() || current.join("Cargo.toml").exists() || current.join("package.json").exists() {
+        if current.join(".git").exists()
+            || current.join(".ind").exists()
+            || current.join("Cargo.toml").exists()
+            || current.join("package.json").exists()
+        {
             return current;
         }
         match current.parent() {
@@ -124,7 +128,11 @@ pub fn load_config(start: Option<&Path>) -> IndConfig {
         .or(file_cfg.base_url)
         .filter(|s| !s.trim().is_empty());
 
-    let approval = match env::var("IND_APPROVAL").ok().or(file_cfg.approval).as_deref() {
+    let approval = match env::var("IND_APPROVAL")
+        .ok()
+        .or(file_cfg.approval)
+        .as_deref()
+    {
         Some("command") => ApprovalMode::Command,
         Some("never") => ApprovalMode::Never,
         _ => ApprovalMode::Chunk,

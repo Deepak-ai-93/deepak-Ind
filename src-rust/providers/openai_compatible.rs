@@ -3,8 +3,8 @@ use futures_util::StreamExt;
 use serde::Serialize;
 
 use crate::providers::types::{
-    error_event, ChatEvent, ChatMessage, ChatRequest, ChatRole, ProviderAdapter,
-    ProviderCapabilities, ProviderError, Usage,
+    ChatEvent, ChatMessage, ChatRequest, ChatRole, ProviderAdapter, ProviderCapabilities,
+    ProviderError, Usage, error_event,
 };
 
 #[derive(Debug, Clone)]
@@ -134,9 +134,9 @@ impl ProviderAdapter for OpenAICompatibleAdapter {
                 include_usage: true,
             },
             temperature: request.temperature,
-            response_format: request.json_mode.then(|| {
-                serde_json::json!({ "type": "json_object" })
-            }),
+            response_format: request
+                .json_mode
+                .then(|| serde_json::json!({ "type": "json_object" })),
         };
 
         let client = reqwest::Client::new();
@@ -156,7 +156,7 @@ impl ProviderAdapter for OpenAICompatibleAdapter {
                     format!("Request failed: {e}"),
                     None,
                     true,
-                ))
+                ));
             }
         };
 
@@ -207,13 +207,21 @@ impl ProviderAdapter for OpenAICompatibleAdapter {
                 if let Some(usage) = data.get("usage").and_then(usage_from) {
                     emit(ChatEvent::Usage { usage });
                 }
-                let Some(choice) = data.get("choices").and_then(|c| c.as_array()).and_then(|c| c.first()) else {
+                let Some(choice) = data
+                    .get("choices")
+                    .and_then(|c| c.as_array())
+                    .and_then(|c| c.first())
+                else {
                     continue;
                 };
                 if let Some(reason) = choice.get("finish_reason").and_then(|r| r.as_str()) {
                     finish_reason = Some(reason.to_string());
                 }
-                if let Some(delta) = choice.get("delta").and_then(|d| d.get("content")).and_then(|c| c.as_str()) {
+                if let Some(delta) = choice
+                    .get("delta")
+                    .and_then(|d| d.get("content"))
+                    .and_then(|c| c.as_str())
+                {
                     if !delta.is_empty() {
                         emit(ChatEvent::Delta {
                             text: delta.to_string(),

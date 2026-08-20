@@ -31,7 +31,9 @@ pub fn create_task_plan(task: &str, context_files: &[String]) -> Result<TaskPlan
                 title: "Understand the change".to_string(),
                 goal: format!("Confirm the smallest change needed for: {normalized}"),
                 status: "pending".to_string(),
-                verification: vec!["Context is selected and the task scope is explicit.".to_string()],
+                verification: vec![
+                    "Context is selected and the task scope is explicit.".to_string(),
+                ],
             },
             TaskChunk {
                 id: format!("{id}-02"),
@@ -39,7 +41,9 @@ pub fn create_task_plan(task: &str, context_files: &[String]) -> Result<TaskPlan
                 title: "Implement the change".to_string(),
                 goal: format!("Apply the approved code change for: {normalized}"),
                 status: "pending".to_string(),
-                verification: vec!["The requested files are changed and the diff is reviewable.".to_string()],
+                verification: vec![
+                    "The requested files are changed and the diff is reviewable.".to_string(),
+                ],
             },
             TaskChunk {
                 id: format!("{id}-03"),
@@ -64,7 +68,8 @@ mod tests {
 
     #[test]
     fn builds_three_chunk_plan() {
-        let plan = create_task_plan("fix the bug", &["a.rs".to_string(), "a.rs".to_string()]).unwrap();
+        let plan =
+            create_task_plan("fix the bug", &["a.rs".to_string(), "a.rs".to_string()]).unwrap();
         assert_eq!(plan.chunks.len(), 3);
         assert_eq!(plan.context_files, vec!["a.rs".to_string()]);
         assert_eq!(plan.chunks[0].sequence, 1);

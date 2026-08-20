@@ -3,8 +3,8 @@ use futures_util::StreamExt;
 use serde::Serialize;
 
 use crate::providers::types::{
-    error_event, ChatEvent, ChatMessage, ChatRequest, ChatRole, ProviderAdapter,
-    ProviderCapabilities, ProviderError, Usage,
+    ChatEvent, ChatMessage, ChatRequest, ChatRole, ProviderAdapter, ProviderCapabilities,
+    ProviderError, Usage, error_event,
 };
 
 #[derive(Debug, Clone)]
@@ -82,7 +82,11 @@ impl ProviderAdapter for AnthropicAdapter {
             .iter()
             .filter(|m| m.role != ChatRole::System)
             .map(|m| AnthropicMessage {
-                role: if m.role == ChatRole::Assistant { "assistant" } else { "user" },
+                role: if m.role == ChatRole::Assistant {
+                    "assistant"
+                } else {
+                    "user"
+                },
                 content: m.content.clone(),
             })
             .collect();
@@ -105,7 +109,9 @@ impl ProviderAdapter for AnthropicAdapter {
             .json(&body)
             .send()
             .await
-            .map_err(|e| ProviderError::new("anthropic", format!("Request failed: {e}"), None, true))?;
+            .map_err(|e| {
+                ProviderError::new("anthropic", format!("Request failed: {e}"), None, true)
+            })?;
 
         if !response.status().is_success() {
             let status = response.status().as_u16();
