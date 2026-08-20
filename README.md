@@ -21,7 +21,7 @@ If your terminal says `ind` is not recognized, use `npx`:
 npx --yes --package=github:Deepak-ai-93/deepak-Ind ind --help
 ```
 
-After publishing to npm, the simplest install will be:
+Once `ind-terminal` has been published to npm by a maintainer, the simplest install will be:
 
 ```bash
 npm install --global ind-terminal
@@ -56,7 +56,7 @@ npm link
 ind --help
 ```
 
-For npm distribution, publish the `ind-terminal` package and install it with `npm install -g ind-terminal`.
+The npm package is not published yet. Until a maintainer publishes it, install from GitHub using the command above.
 
 ## Commands
 
@@ -132,6 +132,7 @@ npm pack --dry-run
 ```
 
 The CI workflow runs typecheck, tests, build, and package verification on Node.js 20.
+
 
 
 
