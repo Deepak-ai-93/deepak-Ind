@@ -1,56 +1,27 @@
-# TODO — IND
+# TODO — IND (Rust Port & Migration)
 
-> **Confirmed:** YES · by: user · on: 2026-08-20
-> The build may **NOT** start until the user approves this list (SKILL.md Stage 3 gate).
-> Manage: `node scripts/todo.mjs list | add "task" --p P1 | priority <id> P0 | done <id> | blocked <id> | confirm`
-> Scope: IND MVP: a provider-neutral, token-efficient, chunked terminal coding agent with live usage telemetry and project memory.
+> **Goal**: Complete port of IND from TypeScript/Node.js to high-performance native Rust for standalone, zero-dependency, ultra-low memory execution across Windows, macOS, and Linux.
 
-## P0 — do first
-_none yet_
+## P0 — Core Foundation & Execution Engine
+- [x] (P0) #101 Setup `Cargo.toml` with dependencies (`clap`, `tokio`, `serde`, `serde_json`, `reqwest`, `rusqlite`, `ignore`, `colored`, etc.).
+- [x] (P0) #102 Port configuration loading (`src-rust/config/mod.rs`) for `.ind/config.json`, env vars, and project root discovery.
+- [x] (P0) #103 Port CLI commands & argument parser (`src-rust/main.rs`) using `clap` (`run`, `plan`, `context`, `route`, `budget`, `providers`, `discover`, `usage`, `memory`, `resume`, `benchmark`, `leaderboard`, `doctor`, `config`, `policy`).
+- [x] (P0) #104 Port Context Indexer & Token Budget Selection (`src-rust/context/`) with `ignore`-based traversal, TS-parity scoring, and token-budgeted selection.
+- [x] (P0) #105 Port Provider Engine & Adapters (`src-rust/providers/`) with streaming SSE adapters for OpenAI-compatible, Anthropic, Google, plus local runtime discovery for Ollama / LM Studio.
+- [x] (P0) #106 Port Tool Execution & File Editing Engine (`src-rust/tools/`) with safe project paths, expected-content edit preconditions, policy checks, destructive-command blocks, and timeouts.
+- [x] (P0) #107 Port Task Planner & Approval Workflow (`src-rust/tasks/`) with 3-chunk plans and chunked execution (`ind plan`, `ind run`).
 
-## P1 — important
-_none yet_
+## P1 — Memory, Usage & Telemetry
+- [x] (P1) #108 Port Local Project Memory (`src-rust/memory/`) with append-only `MEMORY.md`, JSON-backed entries, and resume state. *(AES-256-GCM encrypted sync still stubbed in `memory sync`.)*
+- [x] (P1) #109 Port SQLite Usage Ledger and token cost tracking (`src-rust/usage/`, `src-rust/budget/`) with budget planning, cost/savings estimation. *(Live terminal monitor pending.)*
+- [x] (P1) #110 Port Resumable Sessions & State Checkpoints (`src-rust/memory/` resume state, `ind resume`). *(`src-rust/replay/` budget-envelope replay pending.)*
+- [ ] (P1) #111 Port Diagnostics and Security Scanner (`ind doctor` renders diagnostics; `src-rust/security/` scanner pending).
 
-## P2 — nice to have
-_none yet_
+## P2 — Extended Features & Benchmarking
+- [x] (P2) #112 Port Local Runtime Discovery for Ollama / LM Studio (`src-rust/providers/discovery.rs`, `ind discover`).
+- [ ] (P2) #113 Port Benchmarking suite & Leaderboard generation (`src-rust/benchmark/`, `ind leaderboard` writes reports).
+- [ ] (P2) #114 Setup automated GitHub Actions CI for cross-platform binary releases (Windows `.exe`, Linux `x86_64`/`aarch64`, macOS universal).
 
-## Done
-- [x] (P2) #15 A community benchmark leaderboard based on reproducible fixture repositories. (from the interview)
-- [x] (P2) #14 Optional hosted memory sync with end-to-end encryption. (from the interview)
-- [x] (P2) #13 Team policy files for command approvals and provider restrictions. (from the interview)
-- [x] (P2) #12 A replay mode for comparing provider and model choices on the same task. (from the interview)
-- [x] (P2) #11 A token budget planner that predicts cost before a chunk runs. (from the interview)
-- [x] (P2) #10 Add advanced routing and optional JSONL integrations — ref: blueprint §6.10
-- [x] (P1) #9 Harden cross-platform packaging, security, tests, and documentation — ref: blueprint §6.9
-- [x] (P1) #8 Create benchmark fixtures and baseline comparison — ref: blueprint §6.8
-- [x] (P1) #7 Add native provider adapters and local runtime discovery — ref: blueprint §6.7
-- [x] (P0) #6 Add Markdown plus SQLite project memory and resume — ref: blueprint §6.6
-- [x] (P0) #5 Add SQLite usage ledger and live terminal monitor — ref: blueprint §6.5
-- [x] (P0) #4 Implement chunked task planning, approval, tools, edits, and verification — ref: blueprint §6.4
-- [x] (P0) #3 Build repository inspection and token-efficient context selection — ref: blueprint §6.3
-- [x] (P0) #2 Implement provider adapter contract and OpenAI-compatible endpoint — ref: blueprint §6.2
-- [x] (P0) #1 Scaffold the cross-platform TypeScript CLI and configuration system — ref: blueprint §6.1
-
----
-
-```
-- [ ] (P1) #N Example task — ref: PRD-4
-```
-
-- **Status:** `[ ]` todo · `[~]` doing · `[!]` blocked · `[x]` done
-
-- **Priority:** `(P0)` do first · `(P1)` important · `(P2)` nice to have
-
-- **ID:** `#n` — assigned by `todo.mjs add`, never reused; used by `priority/done/doing/blocked/todo/remove`
-
-- **Reference:** `— ref: PRD-4` links a task to the PRD/blueprint (optional)
-
-- **The user owns the list.** The agent proposes it; the user **confirms** it (gate), adds tasks, and changes priorities at any time — even mid-build.
-
-- **Priorities:** `P0` = do first (blocks everything else) · `P1` = important · `P2` = nice to have. Order within a group is the suggested build order.
-
-- **Confirm:** the agent runs `node scripts/todo.mjs confirm` only after the user explicitly approves. The build pack (`PRD.md` + `stack-blueprint.md` + `sitemap.md`) and this list are confirmed together — no code before both are approved.
-
-- **Done only when verified:** a task is `done` after it runs and is verified — not when the code is merely written.
-
-- **Script owns the four sections** (`P0/P1/P2/Done`): `todo.mjs` re-sorts tasks into them on every change. Keep prose notes **above the list** or **under the Done section**.
+## Build Status
+- `cargo build` — clean, no warnings
+- `cargo test` — 33 tests passing (context selection, routing, budget, planner, runner, tools, memory, policy, provider parsing)

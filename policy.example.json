@@ -1,6 +1,6 @@
 {
   "approval": "chunk",
   "allowedProviders": ["openai-compatible", "openai", "anthropic", "google"],
-  "allowedCommands": ["npm (run )?(test|typecheck|build)$", "node .*"],
-  "deniedCommands": ["npm publish", "git push", "rm -rf", "del /s"]
+  "allowedCommands": ["^cargo (run|test|typecheck|check|build)$", "^cargo run -- .*", "^cargo test .*"],
+  "deniedCommands": ["rm -rf", "del /s", "shutdown", "git push --force"]
 }

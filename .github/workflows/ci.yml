@@ -6,15 +6,21 @@ on:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
-      - run: npm pack --dry-run
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Lint
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Build
+        run: cargo build --release
+      - name: Test
+        run: cargo test
