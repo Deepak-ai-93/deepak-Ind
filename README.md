@@ -13,6 +13,23 @@ ind --help
 
 The GitHub install automatically builds the CLI during installation. IND targets Node.js 20+ on Windows, macOS, and Linux.
 
+### Windows PowerShell troubleshooting
+
+Use the global flag exactly as shown:
+
+```powershell
+npm.cmd install --global github:Deepak-ai-93/deepak-Ind
+$npmGlobal = npm.cmd prefix --global
+& "$npmGlobal\ind.cmd" --help
+```
+
+If `ind` is still not recognized, close and reopen PowerShell. The npm global directory must be on PATH. To update the current PowerShell session immediately:
+
+```powershell
+$env:Path += ";$(npm.cmd prefix --global)"
+ind --help
+```
+
 ### Install from source
 
 ```bash
@@ -100,6 +117,8 @@ npm pack --dry-run
 ```
 
 The CI workflow runs typecheck, tests, build, and package verification on Node.js 20.
+
+
 
 
 
