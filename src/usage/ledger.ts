@@ -1,106 +1,16 @@
-import { randomUUID } from "node:crypto";
-import Database from "better-sqlite3";
-import { mkdirSync } from "node:fs";
+﻿import { randomUUID } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Usage } from "../providers/types.js";
 
-export interface UsageEventInput {
-  sessionId: string;
-  chunkId?: string;
-  provider: string;
-  model: string;
-  eventType: string;
-  usage: Usage;
-  latencyMs: number;
-  estimatedCost?: number;
-  baselineInputTokens?: number;
-}
+export interface UsageEventInput { sessionId: string; chunkId?: string; provider: string; model: string; eventType: string; usage: Usage; latencyMs: number; estimatedCost?: number; baselineInputTokens?: number; }
+export interface UsageSummary { sessions: number; events: number; inputTokens: number; outputTokens: number; cachedTokens: number; totalTokens: number; estimatedCost: number; baselineInputTokens: number; tokensSaved: number; averageLatencyMs: number; }
+interface Session { id: string; provider: string; model: string; startedAt: string; endedAt?: string; status: string; }
+interface StoredEvent extends UsageEventInput { id: string; createdAt: string; }
+interface UsageFile { sessions: Session[]; events: StoredEvent[]; }
+export interface UsageLedger { startSession(provider: string, model: string): string; finishSession(sessionId: string, status: "completed" | "failed" | "canceled"): void; recordEvent(event: UsageEventInput): void; summary(sessionId?: string): UsageSummary; close(): void; }
 
-export interface UsageSummary {
-  sessions: number;
-  events: number;
-  inputTokens: number;
-  outputTokens: number;
-  cachedTokens: number;
-  totalTokens: number;
-  estimatedCost: number;
-  baselineInputTokens: number;
-  tokensSaved: number;
-  averageLatencyMs: number;
-}
+function costFor(provider: string, model: string, usage: Usage): number { const rates: Record<string, { input: number; output: number }> = { "openai-compatible:gpt-4o-mini": { input: 0.15, output: 0.6 }, "openai:gpt-4o-mini": { input: 0.15, output: 0.6 } }; const rate = rates[`${provider}:${model}`.toLowerCase()]; return rate ? (usage.inputTokens / 1_000_000) * rate.input + (usage.outputTokens / 1_000_000) * rate.output : 0; }
+function load(path: string): UsageFile { if (!existsSync(path)) return { sessions: [], events: [] }; try { return JSON.parse(readFileSync(path, "utf8")) as UsageFile; } catch { return { sessions: [], events: [] }; } }
 
-export interface UsageLedger {
-  startSession(provider: string, model: string): string;
-  finishSession(sessionId: string, status: "completed" | "failed" | "canceled"): void;
-  recordEvent(event: UsageEventInput): void;
-  summary(sessionId?: string): UsageSummary;
-  close(): void;
-}
-
-function costFor(provider: string, model: string, usage: Usage): number {
-  const key = `${provider}:${model}`.toLowerCase();
-  const rates: Record<string, { input: number; output: number }> = {
-    "openai-compatible:gpt-4o-mini": { input: 0.15, output: 0.6 },
-    "openai:gpt-4o-mini": { input: 0.15, output: 0.6 },
-  };
-  const rate = rates[key];
-  if (!rate) return 0;
-  return ((usage.inputTokens / 1_000_000) * rate.input) + ((usage.outputTokens / 1_000_000) * rate.output);
-}
-
-export function openUsageLedger(projectRoot: string): UsageLedger {
-  const directory = join(projectRoot, ".ind");
-  mkdirSync(directory, { recursive: true });
-  const db = new Database(join(directory, "usage.db"));
-  db.pragma("journal_mode = WAL");
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS sessions (
-      id TEXT PRIMARY KEY,
-      provider TEXT NOT NULL,
-      model TEXT NOT NULL,
-      started_at TEXT NOT NULL,
-      ended_at TEXT,
-      status TEXT NOT NULL DEFAULT 'active'
-    );
-    CREATE TABLE IF NOT EXISTS usage_events (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      session_id TEXT NOT NULL REFERENCES sessions(id),
-      chunk_id TEXT,
-      provider TEXT NOT NULL,
-      model TEXT NOT NULL,
-      event_type TEXT NOT NULL,
-      input_tokens INTEGER NOT NULL,
-      output_tokens INTEGER NOT NULL,
-      cached_tokens INTEGER NOT NULL DEFAULT 0,
-      total_tokens INTEGER NOT NULL,
-      latency_ms INTEGER NOT NULL,
-      estimated_cost REAL NOT NULL DEFAULT 0,
-      baseline_input_tokens INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL
-    );
-    CREATE INDEX IF NOT EXISTS idx_usage_events_session ON usage_events(session_id);
-    CREATE INDEX IF NOT EXISTS idx_usage_events_created ON usage_events(created_at);
-  `);
-  const insertSession = db.prepare("INSERT INTO sessions (id, provider, model, started_at) VALUES (?, ?, ?, ?)");
-  const finishSession = db.prepare("UPDATE sessions SET status = ?, ended_at = ? WHERE id = ?");
-  const insertEvent = db.prepare(`INSERT INTO usage_events (session_id, chunk_id, provider, model, event_type, input_tokens, output_tokens, cached_tokens, total_tokens, latency_ms, estimated_cost, baseline_input_tokens, created_at) VALUES (@sessionId, @chunkId, @provider, @model, @eventType, @inputTokens, @outputTokens, @cachedTokens, @totalTokens, @latencyMs, @estimatedCost, @baselineInputTokens, @createdAt)`);
-  const summaryQuery = db.prepare(`SELECT COUNT(DISTINCT session_id) AS sessions, COUNT(*) AS events, COALESCE(SUM(input_tokens), 0) AS inputTokens, COALESCE(SUM(output_tokens), 0) AS outputTokens, COALESCE(SUM(cached_tokens), 0) AS cachedTokens, COALESCE(SUM(total_tokens), 0) AS totalTokens, COALESCE(SUM(estimated_cost), 0) AS estimatedCost, COALESCE(SUM(baseline_input_tokens), 0) AS baselineInputTokens, COALESCE(AVG(latency_ms), 0) AS averageLatencyMs FROM usage_events ${"WHERE session_id = ?"}`);
-  const summaryAllQuery = db.prepare(`SELECT COUNT(DISTINCT session_id) AS sessions, COUNT(*) AS events, COALESCE(SUM(input_tokens), 0) AS inputTokens, COALESCE(SUM(output_tokens), 0) AS outputTokens, COALESCE(SUM(cached_tokens), 0) AS cachedTokens, COALESCE(SUM(total_tokens), 0) AS totalTokens, COALESCE(SUM(estimated_cost), 0) AS estimatedCost, COALESCE(SUM(baseline_input_tokens), 0) AS baselineInputTokens, COALESCE(AVG(latency_ms), 0) AS averageLatencyMs FROM usage_events`);
-
-  return {
-    startSession(provider, model) {
-      const id = randomUUID();
-      insertSession.run(id, provider, model, new Date().toISOString());
-      return id;
-    },
-    finishSession(sessionId, status) { finishSession.run(status, new Date().toISOString(), sessionId); },
-    recordEvent(event) {
-      insertEvent.run({ sessionId: event.sessionId, chunkId: event.chunkId ?? null, provider: event.provider, model: event.model, eventType: event.eventType, inputTokens: event.usage.inputTokens, outputTokens: event.usage.outputTokens, cachedTokens: event.usage.cachedTokens ?? 0, totalTokens: event.usage.totalTokens, latencyMs: event.latencyMs, estimatedCost: event.estimatedCost ?? costFor(event.provider, event.model, event.usage), baselineInputTokens: event.baselineInputTokens ?? 0, createdAt: new Date().toISOString() });
-    },
-    summary(sessionId) {
-      const raw = (sessionId ? summaryQuery.get(sessionId) : summaryAllQuery.get()) as UsageSummary;
-      return { ...raw, tokensSaved: Math.max(0, raw.baselineInputTokens - raw.inputTokens) };
-    },
-    close() { db.close(); },
-  };
-}
+export function openUsageLedger(projectRoot: string): UsageLedger { const directory = join(projectRoot, ".ind"); mkdirSync(directory, { recursive: true }); const path = join(directory, "usage.json"); const data = load(path); const save = () => writeFileSync(path, JSON.stringify(data, null, 2), "utf8"); return { startSession(provider, model) { const id = randomUUID(); data.sessions.push({ id, provider, model, startedAt: new Date().toISOString(), status: "active" }); save(); return id; }, finishSession(sessionId, status) { const session = data.sessions.find((item) => item.id === sessionId); if (session) { session.status = status; session.endedAt = new Date().toISOString(); save(); } }, recordEvent(event) { data.events.push({ ...event, id: randomUUID(), createdAt: new Date().toISOString() }); save(); }, summary(sessionId) { const events = sessionId ? data.events.filter((event) => event.sessionId === sessionId) : data.events; const inputTokens = events.reduce((sum, event) => sum + event.usage.inputTokens, 0); const outputTokens = events.reduce((sum, event) => sum + event.usage.outputTokens, 0); const cachedTokens = events.reduce((sum, event) => sum + (event.usage.cachedTokens ?? 0), 0); const baselineInputTokens = events.reduce((sum, event) => sum + (event.baselineInputTokens ?? 0), 0); return { sessions: new Set(events.map((event) => event.sessionId)).size, events: events.length, inputTokens, outputTokens, cachedTokens, totalTokens: events.reduce((sum, event) => sum + event.usage.totalTokens, 0), estimatedCost: events.reduce((sum, event) => sum + (event.estimatedCost ?? costFor(event.provider, event.model, event.usage)), 0), baselineInputTokens, tokensSaved: Math.max(0, baselineInputTokens - inputTokens), averageLatencyMs: events.length ? events.reduce((sum, event) => sum + event.latencyMs, 0) / events.length : 0 }; }, close() {} }; }

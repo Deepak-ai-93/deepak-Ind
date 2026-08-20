@@ -1,4 +1,4 @@
-﻿# IND
+# IND
 
 IND is a cross-platform terminal coding agent focused on lower token usage, bounded task chunks, transparent usage monitoring, and portable project memory.
 
@@ -111,7 +111,7 @@ The benchmark reports savings and expected-file recall separately; a lower token
 
 ## Local state and safety
 
-- `.ind/usage.db` stores usage events, structured memory, and resume state.
+- `.ind/usage.json` and `.ind/memory.json` store local usage, memory, and resume state.
 - `MEMORY.md` is human-readable project memory.
 - File edits are restricted to the project root and reject `.env` and `.git` paths.
 - Commands require approval and block common destructive patterns.
@@ -119,7 +119,7 @@ The benchmark reports savings and expected-file recall separately; a lower token
 
 ## CI test behavior
 
-The test command discovers TypeScript tests without shell globs and runs each file in an isolated Node process. This keeps the native SQLite dependency stable across Windows, macOS, and Linux CI runners.
+The test command discovers TypeScript tests without shell globs and runs each file in an isolated Node process. This uses portable JSON persistence, so installation does not compile native addons on Windows, macOS, or Linux.
 
 ## Development
 
